@@ -41,7 +41,6 @@ namespace nanoCAD_PRPR_WPF
             getValBox.Text = Tools.CadCommand.PRPR_dataProc(setValBox.Text);
         }
 
-
         private void GetDwgDocsList_Click(object sender, RoutedEventArgs e)
         {
             dwgDocsNameList.ItemsSource = GetDwgDocsFullNameList();
