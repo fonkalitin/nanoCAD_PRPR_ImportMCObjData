@@ -1,0 +1,52 @@
+﻿<Window x:Class="nanoCAD_PRPR_WPF.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:nanoCAD_PRPR_WPF"
+        mc:Ignorable="d"
+        Title="Импорт данных из СПДС объектов DWG" Height="450" Width="800">
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="159*"/>
+            <ColumnDefinition Width="363*"/>
+            <ColumnDefinition Width="278*"/>
+        </Grid.ColumnDefinitions>
+        <TextBox x:Name="setValBox" HorizontalAlignment="Left" Height="24" Margin="95,253,0,0" TextWrapping="Wrap" Text="введите значение" VerticalAlignment="Top" Width="131" Grid.ColumnSpan="2"/>
+        <Button x:Name="myActionButton" Content="Передать данные, обработать их и вернуть результат" HorizontalAlignment="Left" Height="33" Margin="29,303,0,0" VerticalAlignment="Top" Width="329" Click="myActionButton_Click" Grid.ColumnSpan="2" RenderTransformOrigin="0.5,0.5">
+            <Button.RenderTransform>
+                <TransformGroup>
+                    <ScaleTransform/>
+                    <SkewTransform AngleY="-0.642"/>
+                    <RotateTransform/>
+                    <TranslateTransform Y="-0.896"/>
+                </TransformGroup>
+            </Button.RenderTransform>
+        </Button>
+        <TextBox x:Name="getValBox" HorizontalAlignment="Left" Height="24" Margin="29,377,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="333" Grid.ColumnSpan="2"/>
+        <TextBlock HorizontalAlignment="Left" Height="25" Margin="80,217,0,0" TextWrapping="Wrap" Text="Передаваемое значение" VerticalAlignment="Top" Width="158" Grid.ColumnSpan="2"/>
+        <TextBlock HorizontalAlignment="Left" Height="25" Margin="49,352,0,0" TextWrapping="Wrap" Text="Значение возвращенное обработчиком мультикад" VerticalAlignment="Top" Width="313" Grid.ColumnSpan="2"/>
+        <ListBox x:Name="dwgDocsNameList" Grid.Column="1" HorizontalAlignment="Left" Height="310" Margin="285,91,0,0" VerticalAlignment="Top" Width="262" Grid.ColumnSpan="2" 
+             SelectionChanged="dwgDocsNameList_SelectionChanged">
+            <ListBox.ItemTemplate>
+                <DataTemplate>
+                    <TextBlock Text="{Binding FileName}" ToolTip="{Binding FullPath}" />
+                </DataTemplate>
+            </ListBox.ItemTemplate>
+        </ListBox>
+
+
+
+        <Button x:Name="GetDwgDocsList" Content="Получить перечень всех открытых DWG" HorizontalAlignment="Left" Height="33" Margin="283,50,0,0" VerticalAlignment="Top" Width="263" Click="GetDwgDocsList_Click" RenderTransformOrigin="0.5,0.5" Grid.Column="1" Grid.ColumnSpan="2">
+            <Button.RenderTransform>
+                <TransformGroup>
+                    <ScaleTransform/>
+                    <SkewTransform AngleY="-0.642"/>
+                    <RotateTransform/>
+                    <TranslateTransform Y="-0.896"/>
+                </TransformGroup>
+            </Button.RenderTransform>
+        </Button>
+
+    </Grid>
+</Window>

@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "NanoFirst": {
+      "commandName": "Project",
+      "workingDirectory": "C:\\Program Files\\Nanosoft\\nanoCAD x64 23.1\\bin"
+    }
+  }
+}
