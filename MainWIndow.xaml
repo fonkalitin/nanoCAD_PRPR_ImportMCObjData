@@ -5,15 +5,40 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:nanoCAD_PRPR_WPF"
         mc:Ignorable="d"
-        Title="Импорт данных из СПДС объектов DWG" Height="450" Width="800">
+        Title="Импорт данных из СПДС объектов DWG" Height="550" Width="900">
+
+    <Window.Resources>
+        <Style TargetType="TreeViewItem">
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="Foreground" Value="Black"/>
+            <Setter Property="Padding" Value="5"/>
+            <Setter Property="FontWeight" Value="Normal"/>
+            <Setter Property="BorderBrush" Value="Transparent"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Style.Triggers>
+                <Trigger Property="IsSelected" Value="True">
+                    <Setter Property="Background" Value="LightBlue"/>
+                    <!-- Цвет фона для выбранного элемента -->
+                    <Setter Property="Foreground" Value="#FF79D431"/>
+                    <!-- Цвет текста для выбранного элемента -->
+                </Trigger>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background" Value="#FF90E8AD"/>
+                    <!-- Цвет фона при наведении -->
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+    </Window.Resources>
+
     <Grid>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="159*"/>
-            <ColumnDefinition Width="363*"/>
-            <ColumnDefinition Width="278*"/>
+            <ColumnDefinition Width="27*"/>
+            <ColumnDefinition Width="222*"/>
+            <ColumnDefinition Width="346*"/>
+            <ColumnDefinition Width="305*"/>
         </Grid.ColumnDefinitions>
-        <TextBox x:Name="setValBox" HorizontalAlignment="Left" Height="24" Margin="95,253,0,0" TextWrapping="Wrap" Text="введите значение" VerticalAlignment="Top" Width="131" Grid.ColumnSpan="2"/>
-        <Button x:Name="myActionButton" Content="Передать данные, обработать их и вернуть результат" HorizontalAlignment="Left" Height="33" Margin="29,303,0,0" VerticalAlignment="Top" Width="329" Click="myActionButton_Click" Grid.ColumnSpan="2" RenderTransformOrigin="0.5,0.5">
+        <TextBox x:Name="setValBox" HorizontalAlignment="Left" Height="24" Margin="0,394,0,0" TextWrapping="Wrap" Text="введите значение" VerticalAlignment="Top" Width="130" Grid.Column="1"/>
+        <Button x:Name="myActionButton" Content="Передать данные, обработать их и вернуть результат" HorizontalAlignment="Left" Height="33" Margin="2,433,0,0" VerticalAlignment="Top" Width="329" Click="myActionButton_Click" Grid.ColumnSpan="2" RenderTransformOrigin="0.5,0.5" Grid.Column="1">
             <Button.RenderTransform>
                 <TransformGroup>
                     <ScaleTransform/>
@@ -23,10 +48,8 @@
                 </TransformGroup>
             </Button.RenderTransform>
         </Button>
-        <TextBox x:Name="getValBox" HorizontalAlignment="Left" Height="24" Margin="29,377,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="333" Grid.ColumnSpan="2"/>
-        <TextBlock HorizontalAlignment="Left" Height="25" Margin="80,217,0,0" TextWrapping="Wrap" Text="Передаваемое значение" VerticalAlignment="Top" Width="158" Grid.ColumnSpan="2"/>
-        <TextBlock HorizontalAlignment="Left" Height="25" Margin="49,352,0,0" TextWrapping="Wrap" Text="Значение возвращенное обработчиком мультикад" VerticalAlignment="Top" Width="313" Grid.ColumnSpan="2"/>
-        <ListBox x:Name="dwgDocsNameList" Grid.Column="1" HorizontalAlignment="Left" Height="310" Margin="285,91,0,0" VerticalAlignment="Top" Width="262" Grid.ColumnSpan="2" 
+        <TextBox x:Name="getValBox" HorizontalAlignment="Left" Height="24" Margin="5,474,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="333" Grid.ColumnSpan="2" Grid.Column="1"/>
+        <ListBox x:Name="dwgDocsNameList" Grid.Column="2" HorizontalAlignment="Left" Height="310" Margin="285,91,0,0" VerticalAlignment="Top" Width="262" Grid.ColumnSpan="2" 
              SelectionChanged="dwgDocsNameList_SelectionChanged">
             <ListBox.ItemTemplate>
                 <DataTemplate>
@@ -35,9 +58,7 @@
             </ListBox.ItemTemplate>
         </ListBox>
 
-
-
-        <Button x:Name="GetDwgDocsList" Content="Получить перечень всех открытых DWG" HorizontalAlignment="Left" Height="33" Margin="283,50,0,0" VerticalAlignment="Top" Width="263" Click="GetDwgDocsList_Click" RenderTransformOrigin="0.5,0.5" Grid.Column="1" Grid.ColumnSpan="2">
+        <Button x:Name="GetDwgDocsList" Content="Обновить список открытых DWG" HorizontalAlignment="Left" Height="33" Margin="283,50,0,0" VerticalAlignment="Top" Width="263" Click="GetDwgDocsList_Click" RenderTransformOrigin="0.5,0.5" Grid.Column="2" Grid.ColumnSpan="2">
             <Button.RenderTransform>
                 <TransformGroup>
                     <ScaleTransform/>
@@ -47,6 +68,20 @@
                 </TransformGroup>
             </Button.RenderTransform>
         </Button>
+        <ListBox x:Name="kipPosList" HorizontalAlignment="Left" Height="183" Margin="63,91,0,0" VerticalAlignment="Top" Width="190" d:ItemsSource="{d:SampleData ItemCount=5}" Grid.Column="2"/>
+        <Button x:Name="getPosData" Grid.Column="2" Content="Импортировать данные КИПиА" HorizontalAlignment="Left" Height="35" Margin="63,51,0,0" VerticalAlignment="Top" Width="190"/>
+
+        <TreeView x:Name="treeView"  Margin="23,51,11,176" Grid.Column="1">
+            <TreeView.ItemTemplate>
+                <HierarchicalDataTemplate ItemsSource="{Binding Children}">
+                    <StackPanel>
+                        <TextBlock Text="{Binding Name}" ToolTip="{Binding ToolTip}"/>
+                    </StackPanel>
+                </HierarchicalDataTemplate>
+            </TreeView.ItemTemplate>
+        </TreeView>
+        
+        <Label Grid.Column="1" Content="Дерево технологии" HorizontalAlignment="Left" Height="28" Margin="59,23,0,0" VerticalAlignment="Top" Width="134"/>
 
     </Grid>
 </Window>
