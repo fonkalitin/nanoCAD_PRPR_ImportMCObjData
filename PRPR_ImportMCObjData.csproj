@@ -14,23 +14,23 @@
 
   <ItemGroup>
     <Reference Include="hostdbmgd">
-      <HintPath>D:\Soft\nCAD\SDK\NC_SDK_RU_24.1.6578.4521.7731\include-x64\hostdbmgd.dll</HintPath>
+      <HintPath>\nCAD 24.1 API\include-x64\hostdbmgd.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="hostmgd">
-      <HintPath>D:\Soft\nCAD\SDK\NC_SDK_RU_24.1.6578.4521.7731\include-x64\hostmgd.dll</HintPath>
+      <HintPath>\nCAD 24.1 API\hostmgd.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="imapimgd">
+      <HintPath>\nCAD 24.1 API\imapimgd.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="MapiBaseTypes">
-      <HintPath>D:\Soft\nCAD\SDK\NC_SDK_RU_24.1.6578.4521.7731\include-x64\mapibasetypes.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="mapiforms">
-      <HintPath>D:\Soft\nCAD\SDK\NC_SDK_RU_24.1.6578.4521.7731\include-x64\mapiforms.dll</HintPath>
+      <HintPath>\nCAD 24.1 API\mapibasetypes.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="mapimgd">
-      <HintPath>D:\Soft\nCAD\SDK\NC_SDK_RU_24.1.6578.4521.7731\include-x64\mapimgd.dll</HintPath>
+      <HintPath>\nCAD 24.1 API\mapimgd.dll</HintPath>
       <Private>False</Private>
     </Reference>
   </ItemGroup>

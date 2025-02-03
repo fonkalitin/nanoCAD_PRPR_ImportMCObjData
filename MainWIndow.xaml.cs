@@ -13,6 +13,10 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 //using System.Windows.Shapes;
 
+using PRPR_METHODS;
+using static Multicad.DatabaseServices.McDbObject;
+using System.Collections.ObjectModel;
+
 namespace nanoCAD_PRPR_WPF
 {
     /// <summary>
@@ -20,6 +24,7 @@ namespace nanoCAD_PRPR_WPF
     /// </summary>
     public partial class MainWindow : Window
     {
+        public ObservableCollection<string> Parameters { get; set; }
         public MainWindow()
         {
             InitializeComponent();
@@ -29,6 +34,10 @@ namespace nanoCAD_PRPR_WPF
             //treeView.DataContext = GetStubData();
             //this.DataContext = GetTreeData();
             treeView.ItemsSource = GetTreeData();
+
+            // Инициализируем ObservableCollection и устанавливаем её как ItemsSource
+            Parameters = new ObservableCollection<string>();
+            kipDataList.ItemsSource = Parameters; // Установите ItemsSource один раз
         }
 
         /// <summary>
@@ -83,94 +92,128 @@ namespace nanoCAD_PRPR_WPF
 
         private List<TreeNode> GetTreeData()
         {
-            var root = new TreeNode("Корень - НОМЕР-РД-ТХ");
+            var root = new TreeNode("НОМЕР-РД.ТХ");
+            var pipeDict = new Dictionary<string, TreeNode>(); // Кэш для труб
 
-            var benzolLine = new TreeNode("Линия 346 (Бензол)");
+            // 1. Собираем только приборы
+            var devices = PRPR_METHODS.PRPR_METHODS.CollectParObjData(
+            parObjCommonName: "Первичный КИПиА v0.6",
+            attributesList: new List<string> { "kip_location", "pos", "media_wtemp", "media_wpress", "proc_place_name" },
+            collectArea: 0
+            );
 
-            var dn50 = new TreeNode("DN50")
+            // 2. Строим дерево на основе данных приборов
+            foreach (var deviceValues in devices)
             {
-                Pressure = "0.12 МПа",
-                Temperature = "25°C",
-                Flow = "30 м³/ч",
-                Children =
-        {
-            new TreeNode("PT46"),
-            new TreeNode("TE689")
-        }
-            };
+                if (deviceValues.Count < 4) continue;
 
-            var dn80 = new TreeNode("DN80")
-            {
-                Pressure = "1.2 МПа",
-                Temperature = "30°C",
-                Flow = "70 м³/ч",
-                Children =
-        {
-            new TreeNode("FT478")
-        }
-            };
+                // Извлекаем данные прибора
+                string pipeName = deviceValues[0].Value.ToString(); // placeName = имя трубы
+                string deviceId = deviceValues[1].Value.ToString(); // уникальный идентификатор
+                string proc_place_name = deviceValues[4].Value.ToString(); // Место в процессе
 
-            benzolLine.Children.Add(dn50);
-            benzolLine.Children.Add(dn80);
+                // 3. Создаем или находим узел трубы
+                if (!pipeDict.TryGetValue(pipeName, out var pipeNode))
+                {
+                    pipeNode = new TreeNode($"{proc_place_name}: {pipeName}", pipeName);
+                    pipeDict.Add(pipeName, pipeNode);
+                    root.Children.Add(pipeNode);
+                }
 
-            root.Children.Add(benzolLine);
-
-            var waterTank = new TreeNode("Емкость E-5 (Вода)")
-            {
-                Pressure = "1.6 МПа",
-                Temperature = "15°C",
-                Flow = "-"
-            };
-            waterTank.Children.Add(new TreeNode("LT345A"));
-            waterTank.Children.Add(new TreeNode("LT345B"));
-
-            root.Children.Add(waterTank);
-
-            // Устанавливаем ToolTip для каждого узла, формируя строку из значений свойств
-            benzolLine.ToolTip = "Давление: 5 бар, Температура: 20°C, Расход: 100 м³/ч";
-            dn50.ToolTip = $"Давление: {dn50.Pressure}, Температура: {dn50.Temperature}, Расход: {dn50.Flow}";
-            dn80.ToolTip = $"Давление: {dn80.Pressure}, Температура: {dn80.Temperature}, Расход: {dn80.Flow}";
-            waterTank.ToolTip = $"Давление: {waterTank.Pressure}, Температура: {waterTank.Temperature}, Расход: {waterTank.Flow}";
-
-            // Устанавливаем ToolTip для дочерних узлов, если это нужно
-            foreach (var child in dn50.Children)
-            {
-                child.ToolTip = $"Давление: {dn50.Pressure}, Температура: {dn50.Temperature}, Расход: {dn50.Flow}";
+                // 4. Добавляем прибор к соответствующей трубе
+                var deviceNode = new TreeNode($"+ {deviceId}", pipeName)
+                {
+                    InstallationLine = pipeName
+                };
+                pipeNode.Children.Add(deviceNode);
             }
 
-            foreach (var child in dn80.Children)
-            {
-                child.ToolTip = $"Давление: {dn80.Pressure}, Температура: {dn80.Temperature}, Расход: {dn80.Flow}";
-            }
-
-            foreach (var child in waterTank.Children)
-            {
-                child.ToolTip = $"Давление: {waterTank.Pressure}, Температура: {waterTank.Temperature}, Расход: {waterTank.Flow}";
-            }
-
-            return new List<TreeNode> { root }; // Возвращаем корень как элемент списка
+            return new List<TreeNode> { root };
         }
-
-
-
 
 
         public class TreeNode
         {
             public string Name { get; set; }
-            public string Pressure { get; set; } // Давление
-            public string Temperature { get; set; } // Температура
-            public string Flow { get; set; } // Расход
-            public string ToolTip { get; set; } // ToolTip
-            public List<TreeNode> Children { get; set; } = new List<TreeNode>();
+            public string InstallationLine { get; set; } // Для труб будет содержать их имя
+            public List<TreeNode> Children { get; } = new List<TreeNode>();
 
-            public TreeNode(string name)
+            public TreeNode(string name, string installationLine = null)
             {
                 Name = name;
+                InstallationLine = installationLine;
             }
         }
 
+
+
+        private void OnTreeNodeSelected1(TreeNode selectedNode)
+        {
+            kipDataList.Items.Clear();
+
+            if (selectedNode == null) return;
+
+            // Для приборов показываем их параметры
+            if (selectedNode.Children.Count == 0) // Если узел прибор
+            {
+                var parameters = new List<string>
+        {
+            $"Давление: {GetDeviceParam(selectedNode.Name, "media_wpress")}",
+            $"Температура: {GetDeviceParam(selectedNode.Name, "media_wpress")}" //,
+            //$"Расход: {GetDeviceParam(selectedNode.Name, "расход")}"
+        };
+                kipDataList.ItemsSource = parameters;
+            }
+        }
+
+        // Метод, который будет вызываться при выборе узла
+        private void OnTreeNodeSelected(TreeNode selectedNode)
+        {
+            // Очистите параметры перед добавлением новых
+            Parameters.Clear();
+
+            if (selectedNode == null) return;
+
+            // Для приборов показываем их параметры
+            if (selectedNode.Children.Count == 0) // Если узел прибор
+            {
+                var pressure = GetDeviceParam(selectedNode.Name, "media_wpress");
+                var temperature = GetDeviceParam(selectedNode.Name, "media_temp"); // исправлено: используйте корректный параметр
+
+                // Добавляем новые параметры
+                Parameters.Add($"Давление: {pressure}");
+                Parameters.Add($"Температура: {temperature}");
+                // Также можете добавить дополнительные параметры по мере необходимости
+            }
+        }
+
+
+        private string GetDeviceParam(string deviceName, string paramName)
+        {
+            // Реализация поиска параметра по имени прибора
+            var device = PRPR_METHODS.PRPR_METHODS.CollectParObjData(
+                "Первичный КИПиА v0.6",
+                new List<string> { paramName },
+                0
+            ).FirstOrDefault(d => d[0].Value.ToString() == deviceName);
+
+            return device?[1].Value.ToString() ?? "N/A";
+        }
+
+
+        private void treeView_SelectedItemChanged(object sender,
+                                            RoutedPropertyChangedEventArgs<object> e)
+        {
+            var selectedNode = e.NewValue as TreeNode;
+            OnTreeNodeSelected(selectedNode);
+        }
+
         private void Button_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void kipDataList_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
 
         }

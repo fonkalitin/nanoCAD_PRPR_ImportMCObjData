@@ -68,10 +68,9 @@
                 </TransformGroup>
             </Button.RenderTransform>
         </Button>
-        <ListBox x:Name="kipPosList" HorizontalAlignment="Left" Height="183" Margin="63,91,0,0" VerticalAlignment="Top" Width="190" d:ItemsSource="{d:SampleData ItemCount=5}" Grid.Column="2"/>
         <Button x:Name="getPosData" Grid.Column="2" Content="Импортировать данные КИПиА" HorizontalAlignment="Left" Height="35" Margin="63,51,0,0" VerticalAlignment="Top" Width="190"/>
 
-        <TreeView x:Name="treeView"  Margin="23,51,11,176" Grid.Column="1">
+        <TreeView x:Name="treeView"  Margin="14,51,313,176" Grid.ColumnSpan="3" SelectedItemChanged="treeView_SelectedItemChanged">
             <TreeView.ItemTemplate>
                 <HierarchicalDataTemplate ItemsSource="{Binding Children}">
                     <StackPanel>
@@ -80,8 +79,15 @@
                 </HierarchicalDataTemplate>
             </TreeView.ItemTemplate>
         </TreeView>
-        
+
         <Label Grid.Column="1" Content="Дерево технологии" HorizontalAlignment="Left" Height="28" Margin="59,23,0,0" VerticalAlignment="Top" Width="134"/>
+        <ListView x:Name="kipDataList" Grid.Column="2" HorizontalAlignment="Left" Height="133" Margin="56,91,0,0" VerticalAlignment="Top" Width="197" d:ItemsSource="{d:SampleData ItemCount=5}">
+            <ListView.View>
+                <GridView>
+                    <GridViewColumn/>
+                </GridView>
+            </ListView.View>
+        </ListView>
 
     </Grid>
 </Window>

@@ -8,6 +8,7 @@ using System;
 using nanoCAD_PRPR_WPF;
 using System.Windows;
 using Multicad.DatabaseServices;
+using PRPR_METHODS;
 
 
 [assembly: Rtm.CommandClass(typeof(Tools.CadCommand))]
