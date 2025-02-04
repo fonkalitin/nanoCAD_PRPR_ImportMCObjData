@@ -24,7 +24,15 @@ namespace nanoCAD_PRPR_WPF
     /// </summary>
     public partial class MainWindow : Window
     {
-        public ObservableCollection<string> Parameters { get; set; }
+
+        public class Parameter
+        {
+            public string Name { get; set; }
+            public string Value { get; set; }
+        }
+
+        public ObservableCollection<Parameter> Parameters { get; set; }
+
         public MainWindow()
         {
             InitializeComponent();
@@ -32,7 +40,7 @@ namespace nanoCAD_PRPR_WPF
             dwgDocsNameList.ItemsSource = GetDwgDocsFullNameList();
 
             // Инициализируем ObservableCollection и устанавливаем её как ItemsSource
-            Parameters = new ObservableCollection<string>();
+            Parameters = new ObservableCollection<Parameter>();
             kipDataList.ItemsSource = Parameters; // Установите ItemsSource один раз
         }
 
@@ -133,7 +141,11 @@ namespace nanoCAD_PRPR_WPF
 
                 // Извлекаем данные прибора
                 string pipeName = deviceValues[0].Value.ToString(); // placeName = имя трубы
-                string deviceId = deviceValues[1].Value.ToString(); // уникальный идентификатор
+                string deviceId = deviceValues[1].Value.ToString(); // Позиция КИП - уникальный идентификатор
+
+                string media_wtemp = deviceValues[2].Value.ToString(); // темп
+                string media_wpress = deviceValues[3].Value.ToString(); // давлен
+
                 string proc_place_name = deviceValues[4].Value.ToString(); // Место в процессе
 
                 // 3. Создаем или находим узел трубы
@@ -147,7 +159,9 @@ namespace nanoCAD_PRPR_WPF
                 // 4. Добавляем прибор к соответствующей трубе
                 var deviceNode = new TreeNode($"+ {deviceId}", pipeName)
                 {
-                    InstallationLine = pipeName
+                    InstallationLine = pipeName,
+                    Media_wtemp = media_wtemp,
+                    Media_wpress = media_wpress
                 };
                 pipeNode.Children.Add(deviceNode);
             }
@@ -161,6 +175,8 @@ namespace nanoCAD_PRPR_WPF
         {
             public string Name { get; set; }
             public string InstallationLine { get; set; } // Для труб будет содержать их имя
+            public string Media_wtemp { get; set; }
+            public string Media_wpress { get; set; }
             public List<TreeNode> Children { get; } = new List<TreeNode>();
 
             public TreeNode(string name, string installationLine = null)
@@ -181,12 +197,9 @@ namespace nanoCAD_PRPR_WPF
             // Для приборов показываем их параметры
             if (selectedNode.Children.Count == 0) // Если узел прибор
             {
-                var pressure = GetDeviceParam(selectedNode.Name, "media_wpress");
-                var temperature = GetDeviceParam(selectedNode.Name, "media_temp");
-
                 // Добавляем новые параметры
-                Parameters.Add($"Давление: {pressure}");
-                Parameters.Add($"Температура: {temperature}");
+                Parameters.Add(new Parameter { Name = "Температура", Value = selectedNode.Media_wtemp });
+                Parameters.Add(new Parameter { Name = "Давление", Value = selectedNode.Media_wpress });
             }
         }
 
@@ -207,9 +220,6 @@ namespace nanoCAD_PRPR_WPF
         private void treeView_SelectedItemChanged(object sender,
                                             RoutedPropertyChangedEventArgs<object> e)
         {
-            //var selectedNode = e.NewValue as TreeNode;
-            //OnTreeNodeSelected(selectedNode);
-
             // Получаем выбранный элемент
             var selectedItem = treeView.SelectedItem as TreeViewItem;
 
