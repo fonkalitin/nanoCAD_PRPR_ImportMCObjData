@@ -30,10 +30,6 @@ namespace nanoCAD_PRPR_WPF
             InitializeComponent();
 
             dwgDocsNameList.ItemsSource = GetDwgDocsFullNameList();
-            //treeView.ItemsSource = GetTreeData().Children;
-            //treeView.DataContext = GetStubData();
-            //this.DataContext = GetTreeData();
-            treeView.ItemsSource = GetTreeData();
 
             // Инициализируем ObservableCollection и устанавливаем её как ItemsSource
             Parameters = new ObservableCollection<string>();
@@ -59,10 +55,37 @@ namespace nanoCAD_PRPR_WPF
         {
              if (dwgDocsNameList.SelectedItem is DwgDoc selectedDoc)
             {
+                string dwgDocName = selectedDoc.FileName;  // Получаем полный путь
                 string fullPath = selectedDoc.FullPath;  // Получаем полный путь
                 Tools.CadCommand.activateDwgDocByName(fullPath); //  работаем с полным путем файла
+                //treeView.ItemsSource = GetTreeData(); 
+                InitializeTreeView(dwgDocName); // Обновление содержимого дерева (подгрузка данных из выбранного чертежа)
             }
 
+        }
+
+        private void InitializeTreeView(string rootName)
+        {
+            treeView.Items.Clear(); // Очищаем дерево
+            var root = GetTreeData(rootName); // Получить дерево данных
+            var rootItem = CreateTreeViewItem(root); // Создай TreeViewItem из корневого узла
+            rootItem.IsExpanded = true; // Разворачиваем корневой узел
+            treeView.Items.Add(rootItem); // Добавляем его в TreeView
+        }
+
+        // метод для добавления `TreeViewItem` первоначального узла
+        private TreeViewItem CreateTreeViewItem(TreeNode node)
+        {
+            var treeViewItem = new TreeViewItem { 
+                Header = node.Name,
+                DataContext = node // Устанавливаем DataContext на текущий узел
+            };
+
+            foreach (var child in node.Children)
+            {
+                treeViewItem.Items.Add(CreateTreeViewItem(child)); // Рекурсивно добавляем дочерние узлы
+            }
+            return treeViewItem;
         }
 
         public class DwgDoc
@@ -90,10 +113,11 @@ namespace nanoCAD_PRPR_WPF
         }
 
 
-        private List<TreeNode> GetTreeData()
+        private TreeNode GetTreeData(string rootName) //List<TreeNode> GetTreeData()
         {
-            var root = new TreeNode("НОМЕР-РД.ТХ");
+            var root = new TreeNode(rootName);
             var pipeDict = new Dictionary<string, TreeNode>(); // Кэш для труб
+
 
             // 1. Собираем только приборы
             var devices = PRPR_METHODS.PRPR_METHODS.CollectParObjData(
@@ -128,7 +152,8 @@ namespace nanoCAD_PRPR_WPF
                 pipeNode.Children.Add(deviceNode);
             }
 
-            return new List<TreeNode> { root };
+            //return new List<TreeNode> { root };
+            return root; // Вернуть только корневой узел
         }
 
 
@@ -145,31 +170,10 @@ namespace nanoCAD_PRPR_WPF
             }
         }
 
-
-
-        private void OnTreeNodeSelected1(TreeNode selectedNode)
-        {
-            kipDataList.Items.Clear();
-
-            if (selectedNode == null) return;
-
-            // Для приборов показываем их параметры
-            if (selectedNode.Children.Count == 0) // Если узел прибор
-            {
-                var parameters = new List<string>
-        {
-            $"Давление: {GetDeviceParam(selectedNode.Name, "media_wpress")}",
-            $"Температура: {GetDeviceParam(selectedNode.Name, "media_wpress")}" //,
-            //$"Расход: {GetDeviceParam(selectedNode.Name, "расход")}"
-        };
-                kipDataList.ItemsSource = parameters;
-            }
-        }
-
         // Метод, который будет вызываться при выборе узла
         private void OnTreeNodeSelected(TreeNode selectedNode)
         {
-            // Очистите параметры перед добавлением новых
+            // Очиститка параметров перед добавлением новых
             Parameters.Clear();
 
             if (selectedNode == null) return;
@@ -178,12 +182,11 @@ namespace nanoCAD_PRPR_WPF
             if (selectedNode.Children.Count == 0) // Если узел прибор
             {
                 var pressure = GetDeviceParam(selectedNode.Name, "media_wpress");
-                var temperature = GetDeviceParam(selectedNode.Name, "media_temp"); // исправлено: используйте корректный параметр
+                var temperature = GetDeviceParam(selectedNode.Name, "media_temp");
 
                 // Добавляем новые параметры
                 Parameters.Add($"Давление: {pressure}");
                 Parameters.Add($"Температура: {temperature}");
-                // Также можете добавить дополнительные параметры по мере необходимости
             }
         }
 
@@ -204,8 +207,21 @@ namespace nanoCAD_PRPR_WPF
         private void treeView_SelectedItemChanged(object sender,
                                             RoutedPropertyChangedEventArgs<object> e)
         {
-            var selectedNode = e.NewValue as TreeNode;
-            OnTreeNodeSelected(selectedNode);
+            //var selectedNode = e.NewValue as TreeNode;
+            //OnTreeNodeSelected(selectedNode);
+
+            // Получаем выбранный элемент
+            var selectedItem = treeView.SelectedItem as TreeViewItem;
+
+            if (selectedItem != null)
+            {
+
+                var node = selectedItem.DataContext as TreeNode; // Извлекаем данные из DataContext
+
+                // Вызываем метод для обработки выбора узла
+                OnTreeNodeSelected(node);
+            }
+
         }
 
         private void Button_Click(object sender, RoutedEventArgs e)
