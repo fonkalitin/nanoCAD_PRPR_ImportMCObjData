@@ -18,6 +18,7 @@ namespace PRPR_ImportMCObjData
 {
     /// <summary>
     /// Логика взаимодействия для KIPdataWindow.xaml
+    /// Это окно агрегации технологических данных по всем КИПиА
     /// </summary>
     public partial class KIPdataWindow : Window
     {
