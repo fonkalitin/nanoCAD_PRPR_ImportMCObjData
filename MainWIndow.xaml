@@ -89,6 +89,7 @@
                 </GridView>
             </ListView.View>
         </ListView>
+        <Button x:Name="ShowKipDataWin" Grid.Column="2" Content="Таблица параметров КИПиА" HorizontalAlignment="Left" Height="21" Margin="106,231,0,0" VerticalAlignment="Top" Width="230" Click="ShowKipDataWin_Click_1"/>
 
     </Grid>
 </Window>

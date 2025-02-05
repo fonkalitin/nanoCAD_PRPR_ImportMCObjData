@@ -16,6 +16,7 @@ using System.Windows.Media.Imaging;
 using PRPR_METHODS;
 using static Multicad.DatabaseServices.McDbObject;
 using System.Collections.ObjectModel;
+using PRPR_ImportMCObjData;
 
 namespace nanoCAD_PRPR_WPF
 {
@@ -242,6 +243,14 @@ namespace nanoCAD_PRPR_WPF
         private void kipDataList_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
 
+        }
+
+        private void ShowKipDataWin_Click_1(object sender, RoutedEventArgs e)
+        {
+            // Созадаем экземпляр класса окна с данными и показываем его
+            var KIPdataWindow = new KIPdataWindow();
+            KIPdataWindow.Show();
+            
         }
     }
 }
