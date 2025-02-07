@@ -1,9 +1,11 @@
 ﻿using Multicad;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -22,6 +24,8 @@ namespace PRPR_ImportMCObjData
     /// </summary>
     public partial class KIPdataWindow : Window
     {
+        //private CancellationTokenSource _cancellationTokenSource;
+
         // Коллекция для хранения данных параметров
         public ObservableCollection<ParameterData> Parameters { get; set; }
 
@@ -130,5 +134,37 @@ namespace PRPR_ImportMCObjData
             public string DisplayName { get; set; }
         }
 
+        /// <summary>
+        /// Обработчик поиска с поддержкой отмены и выделения всех совпадений
+        /// </summary>
+        private void SearchTextBox_KeyUp(object sender, KeyEventArgs e)
+        {
+            try
+            {
+                bool isFound = DataGridSearchService.FindTextInDataGrid(dataGrid, searchTextBox.Text);
+
+                resultTextBlock.Text = isFound ? "Найдено совпадение!" : "Совпадений нет";
+                resultTextBlock.Foreground = isFound ? Brushes.Green : Brushes.Red;
+            }
+            catch (OperationCanceledException) { /* Поиск отменён */ }
+
+        }
+
+       
+
+        private void CheckAll_Click(object sender, RoutedEventArgs e) // Отметить все позиции
+        {
+            SelectedCount.Text = DataGridSearchService.CheckRowsInDataGrid(dataGrid, DataGridSearchService.CheckAction.All).ToString();
+        }
+
+        private void CheckNone_Click(object sender, RoutedEventArgs e) // Снять все отметки
+        {
+            SelectedCount.Text = DataGridSearchService.CheckRowsInDataGrid(dataGrid, DataGridSearchService.CheckAction.None).ToString();
+        }
+
+        private void CheckSelected_Click(object sender, RoutedEventArgs e)
+        {
+            SelectedCount.Text = DataGridSearchService.CheckRowsInDataGrid(dataGrid, DataGridSearchService.CheckAction.Select).ToString();
+        }
     }
 }

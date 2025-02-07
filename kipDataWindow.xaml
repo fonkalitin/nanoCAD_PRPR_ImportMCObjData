@@ -11,7 +11,35 @@
             <ColumnDefinition Width="877*"/>
             <ColumnDefinition Width="123*"/>
         </Grid.ColumnDefinitions>
-        <DataGrid x:Name="dataGrid" AutoGenerateColumns="False" Height="512" Margin="28,23,53,199" Width="969" d:ItemsSource="{d:SampleData ItemCount=5}" Grid.ColumnSpan="2"/>
+
+        <DataGrid 
+    x:Name="dataGrid" 
+    AutoGenerateColumns="False" 
+    Margin="16,68,65,168" 
+    Width="969" 
+    d:ItemsSource="{d:SampleData ItemCount=5}" 
+    Grid.ColumnSpan="2">
+
+
+            <DataGrid.RowStyle>
+                <Style TargetType="DataGridRow">
+                    <Style.Triggers>
+                        <Trigger Property="IsSelected" Value="True">
+                            <Setter Property="Background" Value="Green"/>
+                            <Setter Property="Foreground" Value="White"/>
+                        </Trigger>
+                    </Style.Triggers>
+                </Style>
+            </DataGrid.RowStyle>
+
+        </DataGrid>
+
+        <TextBox x:Name="searchTextBox" HorizontalAlignment="Left" Height="19" Margin="16,31,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="148" KeyUp="SearchTextBox_KeyUp"/>
+        <TextBlock x:Name="resultTextBlock" HorizontalAlignment="Left" Height="19" Margin="194,31,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="175"/>
+        <Button x:Name="CheckAll" Content="Выбрать все позиции" HorizontalAlignment="Left" Height="19" Margin="448,31,0,0" VerticalAlignment="Top" Width="142" Click="CheckAll_Click"/>
+        <Button x:Name="CheckNone" Content="Снять выбор" HorizontalAlignment="Left" Height="19" Margin="603,31,0,0" VerticalAlignment="Top" Width="98" Click="CheckNone_Click"/>
+        <Button x:Name="CheckSelected" Content="Выбрать выделенные" HorizontalAlignment="Left" Height="19" Margin="729,31,0,0" VerticalAlignment="Top" Width="142" Click="CheckSelected_Click"/>
+        <TextBlock x:Name="SelectedCount" HorizontalAlignment="Left" Height="19" Margin="387,31,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="51"/>
 
     </Grid>
 </Window>
