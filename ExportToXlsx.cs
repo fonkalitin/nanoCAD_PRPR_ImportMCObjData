@@ -11,47 +11,62 @@ using X14 = DocumentFormat.OpenXml.Office2010.Excel;
 
 namespace PRPR_ImportMCObjData
 {
+    /// <summary>
+    /// Предоставляет функционал для экспорта данных DataGrid в файл формата XLSX
+    /// </summary>
     public static class ExportToXLSX
     {
+        /// <summary>
+        /// Экспортирует данные из DataGrid в XLSX файл с учетом выбранных чекбоксов
+        /// </summary>
+        /// <param name="dataGrid">Источник данных для экспорта</param>
+        /// <param name="exportHeaders">Флаг экспорта заголовков</param>
+        /// <param name="filePath">Путь для сохранения файла</param>
+        /// <exception cref="InvalidOperationException">Выбрасывается при некорректной структуре DataGrid</exception>
         public static void ExportToExcel(DataGrid dataGrid, bool exportHeaders, string filePath)
         {
+            // Валидация структуры DataGrid
             if (dataGrid.Columns.Count < 2)
                 throw new InvalidOperationException("DataGrid должен иметь как минимум два столбца.");
 
+            // Проверка первого столбца на чекбокс
             var checkBoxColumn = dataGrid.Columns[0] as DataGridCheckBoxColumn
                 ?? throw new InvalidOperationException("Первый столбец должен быть DataGridCheckBoxColumn.");
 
+            // Получение привязки данных чекбокса
             var checkBoxBinding = checkBoxColumn.Binding as Binding
                 ?? throw new InvalidOperationException("Чекбокс столбец должен иметь валидную привязку.");
 
             string checkBoxPropertyPath = checkBoxBinding.Path.Path;
-            var culture = CultureInfo.GetCultureInfo("ru-RU");
+            var culture = CultureInfo.GetCultureInfo("ru-RU"); // Установка русской культуры
 
+            // Создание документа Excel
             using (var spreadsheet = SpreadsheetDocument.Create(filePath, SpreadsheetDocumentType.Workbook))
             {
-                // Создаем базовую структуру документа
+                // Базовая структура документа
                 var workbookPart = spreadsheet.AddWorkbookPart();
-                workbookPart.Workbook = new Workbook();
+                workbookPart.Workbook = new Workbook(); // Создание основной книги
 
                 var worksheetPart = workbookPart.AddNewPart<WorksheetPart>();
-                worksheetPart.Worksheet = new Worksheet(new SheetData());
+                worksheetPart.Worksheet = new Worksheet(new SheetData()); // Добавление листа
 
+                // Настройка структуры листов
                 var sheets = workbookPart.Workbook.AppendChild(new Sheets());
                 sheets.Append(new Sheet
                 {
                     Id = workbookPart.GetIdOfPart(worksheetPart),
                     SheetId = 1,
-                    Name = "Экспорт данных"
+                    Name = "Экспорт данных" // Имя листа
                 });
 
                 var sheetData = worksheetPart.Worksheet.GetFirstChild<SheetData>();
-                uint rowIndex = 1;
+                uint rowIndex = 1; // Счетчик строк
 
+                // Экспорт заголовков
                 if (exportHeaders)
                 {
-                    // Создаем строку заголовков
                     var headerRow = new Row { RowIndex = rowIndex++ };
-                    foreach (var column in dataGrid.Columns.Skip(1))
+                    foreach (var column in dataGrid.Columns.Skip(1)) // Пропуск первого столбца
                     {
                         headerRow.Append(new Cell
                         {
@@ -62,19 +77,21 @@ namespace PRPR_ImportMCObjData
                     sheetData.Append(headerRow);
                 }
 
-                // Обрабатываем данные
+                // Обработка данных
                 foreach (var item in dataGrid.Items)
                 {
+                    // Фильтрация по состоянию чекбокса
                     if (!GetCheckBoxValue(item, checkBoxPropertyPath)) continue;
 
                     var dataRow = new Row { RowIndex = rowIndex++ };
-                    foreach (var column in dataGrid.Columns.Skip(1))
+                    foreach (var column in dataGrid.Columns.Skip(1)) // Пропуск первого столбца
                     {
                         if (column is DataGridBoundColumn boundColumn)
                         {
                             var bindingPath = (boundColumn.Binding as Binding)?.Path.Path;
                             if (bindingPath == null) continue;
 
+                            // Получение значения и создание ячейки
                             var value = BindingEvaluator.GetValue(item, bindingPath);
                             var cell = CreateCellWithValue(value, culture);
                             dataRow.Append(cell);
@@ -83,9 +100,10 @@ namespace PRPR_ImportMCObjData
                     sheetData.Append(dataRow);
                 }
 
-                workbookPart.Workbook.Save();
+                workbookPart.Workbook.Save(); // Финализация документа
             }
 
+            // Диалог завершения операции
             var result = MessageBox.Show(
                 "Экспорт завершен успешно. Открыть файл XLSX сейчас?",
                 "Успех",
@@ -101,10 +119,17 @@ namespace PRPR_ImportMCObjData
             }
         }
 
+        /// <summary>
+        /// Создает ячейку Excel с правильным форматированием значения
+        /// </summary>
+        /// <param name="value">Значение для записи</param>
+        /// <param name="culture">Используемая культура</param>
+        /// <returns>Форматированная ячейка</returns>
         private static Cell CreateCellWithValue(object value, CultureInfo culture)
         {
             var cell = new Cell();
 
+            // Обработка null-значений
             if (value == null)
             {
                 cell.DataType = CellValues.String;
@@ -112,42 +137,35 @@ namespace PRPR_ImportMCObjData
                 return cell;
             }
 
+            // Определение типа данных
             switch (value)
             {
-                case DateTime dt:
+                case DateTime dt: // Форматирование даты
                     cell.DataType = CellValues.Number;
                     cell.CellValue = new CellValue(dt.ToOADate().ToString(CultureInfo.InvariantCulture));
-                    cell.StyleIndex = 14U; // Стиль даты
+                    cell.StyleIndex = 14U; // Применение стиля даты
                     break;
 
-                case double dbl:
+                case double dbl: // Числа с плавающей точкой
+                case decimal dec: // Десятичные числа
+                case int integer: // Целые числа
                     cell.DataType = CellValues.Number;
-                    cell.CellValue = new CellValue(dbl.ToString(CultureInfo.InvariantCulture));
+                    cell.CellValue = new CellValue(Convert.ToString(value, CultureInfo.InvariantCulture));
                     break;
 
-                case decimal dec:
-                    cell.DataType = CellValues.Number;
-                    cell.CellValue = new CellValue(dec.ToString(CultureInfo.InvariantCulture));
-                    break;
-
-                case int integer:
-                    cell.DataType = CellValues.Number;
-                    cell.CellValue = new CellValue(integer.ToString(CultureInfo.InvariantCulture));
-                    break;
-
-                default:
+                default: // Текстовые и прочие значения
                     var stringValue = Convert.ToString(value, culture)?
                         .Replace("\r", "")
                         .Replace("\n", "")
                         .Trim() ?? "";
 
-                    // Автоматическая конвертация чисел с запятыми
+                    // Попытка парсинга чисел с учетом культуры
                     if (double.TryParse(stringValue, NumberStyles.Any, culture, out var number))
                     {
                         cell.DataType = CellValues.Number;
                         cell.CellValue = new CellValue(number.ToString(CultureInfo.InvariantCulture));
                     }
-                    else
+                    else // Текстовое представление
                     {
                         cell.DataType = CellValues.InlineString;
                         cell.InlineString = new InlineString(new Text(stringValue));
@@ -158,14 +176,26 @@ namespace PRPR_ImportMCObjData
             return cell;
         }
 
+        /// <summary>
+        /// Получает значение чекбокса из объекта данных
+        /// </summary>
+        /// <param name="item">Элемент данных</param>
+        /// <param name="propertyPath">Путь к свойству</param>
+        /// <returns>Состояние чекбокса</returns>
         private static bool GetCheckBoxValue(object item, string propertyPath)
         {
             var value = BindingEvaluator.GetValue(item, propertyPath);
             return value is bool b && b;
         }
 
+        /// <summary>
+        /// Вспомогательный класс для работы с привязками данных
+        /// </summary>
         public static class BindingEvaluator
         {
+            /// <summary>
+            /// Получает значение свойства через систему привязок WPF
+            /// </summary>
             public static object GetValue(object source, string propertyPath)
             {
                 var binding = new Binding(propertyPath)
@@ -176,9 +206,12 @@ namespace PRPR_ImportMCObjData
 
                 var dummy = new DummyObject();
                 BindingOperations.SetBinding(dummy, DummyObject.ValueProperty, binding);
-                return dummy.Value;
+                return dummy.Value; // Возврат вычисленного значения
             }
 
+            /// <summary>
+            /// Вспомогательный DependencyObject для получения значений привязки
+            /// </summary>
             private class DummyObject : DependencyObject
             {
                 public static readonly DependencyProperty ValueProperty =
@@ -193,6 +226,3 @@ namespace PRPR_ImportMCObjData
         }
     }
 }
-
-
-
