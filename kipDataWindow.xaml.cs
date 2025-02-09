@@ -170,11 +170,13 @@ namespace PRPR_ImportMCObjData
         private void ExportToCsvBtn_Click(object sender, RoutedEventArgs e)
         {
             ExportToCSV.ExportToCsv(dataGrid, ExportHeaders.IsChecked.Value, "C:\\tmp\\KIPdata.csv");
+            //ExportDataGridToFile.ExportToCsv(dataGrid, ExportHeaders.IsChecked.Value, "C:\\tmp\\KIPdata.csv");
         }
 
         private void ExportToXlsxBtn_Click(object sender, RoutedEventArgs e)
         {
-            ExportToXLSX.ExportToExcel(dataGrid, ExportHeaders.IsChecked.Value, "C:\\tmp\\KIPdata.xlsx");
+            ExportToXLSX.ExportToXlsx(dataGrid, ExportHeaders.IsChecked.Value, "C:\\tmp\\KIPdata.xlsx");
+            //ExportDataGridToFile.ExportToXlsx(dataGrid, ExportHeaders.IsChecked.Value, "C:\\tmp\\KIPdata.csv");
         }
 
         private void ExportHeaders_Checked(object sender, RoutedEventArgs e)

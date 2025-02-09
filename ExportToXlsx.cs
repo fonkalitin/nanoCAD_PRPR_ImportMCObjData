@@ -23,7 +23,7 @@ namespace PRPR_ImportMCObjData
         /// <param name="exportHeaders">Флаг экспорта заголовков</param>
         /// <param name="filePath">Путь для сохранения файла</param>
         /// <exception cref="InvalidOperationException">Выбрасывается при некорректной структуре DataGrid</exception>
-        public static void ExportToExcel(DataGrid dataGrid, bool exportHeaders, string filePath)
+        public static void ExportToXlsx(DataGrid dataGrid, bool exportHeaders, string filePath)
         {
             // Валидация структуры DataGrid
             if (dataGrid.Columns.Count < 2)
