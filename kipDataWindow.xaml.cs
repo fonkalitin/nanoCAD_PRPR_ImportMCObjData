@@ -166,5 +166,10 @@ namespace PRPR_ImportMCObjData
         {
             SelectedCount.Text = DataGridSearchService.CheckRowsInDataGrid(dataGrid, DataGridSearchService.CheckAction.Select).ToString();
         }
+
+        private void ExportToCsvBtn_Click(object sender, RoutedEventArgs e)
+        {
+            ExportToCSV.ExportToCsv(dataGrid, "C:\\tmp\\KIPdata.csv");
+        }
     }
 }

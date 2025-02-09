@@ -91,51 +91,39 @@ namespace PRPR_ImportMCObjData
             if (dataGrid == null)
                 throw new ArgumentNullException(nameof(dataGrid));
 
+            // Проверяем, что первый столбец - CheckBoxColumn
+            if (dataGrid.Columns[0] is not DataGridCheckBoxColumn checkBoxColumn)
+                throw new InvalidOperationException("Первый столбец должен быть DataGridCheckBoxColumn.");
+
+            // Получаем свойство, к которому привязан CheckBox
+            var bindingPath = ((Binding)checkBoxColumn.Binding)?.Path.Path;
+            if (string.IsNullOrEmpty(bindingPath))
+                throw new InvalidOperationException("CheckBox column must have a valid binding.");
+
             int checkedCount = 0;
 
-            // Проходим по всем строкам в DataGrid
+            // Работаем напрямую с данными, а не с визуальными элементами
             foreach (var item in dataGrid.Items)
             {
-                // Получаем строку DataGridRow для текущего элемента
-                var row = dataGrid.ItemContainerGenerator.ContainerFromItem(item) as DataGridRow;
-                if (row == null)
-                    continue;
-
-                // Предполагаем, что чекбокс находится в первом столбце (индекс 0)
-                var checkBoxColumn = dataGrid.Columns[0] as DataGridCheckBoxColumn;
-                if (checkBoxColumn == null)
-                    throw new InvalidOperationException("Первый столбец должен быть DataGridCheckBoxColumn.");
-
-                // Получаем ячейку с чекбоксом
-                var cellContent = checkBoxColumn.GetCellContent(row);
-                if (cellContent is CheckBox checkBox)
+                bool shouldCheck = checkAction switch
                 {
-                    switch (checkAction)
-                    {
-                        case CheckAction.All:
-                            checkBox.IsChecked = true;
-                            checkedCount++;
-                            break;
+                    CheckAction.All => true,
+                    CheckAction.None => false,
+                    CheckAction.Select => dataGrid.SelectedItems.Contains(item),
+                    _ => throw new ArgumentOutOfRangeException(nameof(checkAction))
+                };
 
-                        case CheckAction.None:
-                            checkBox.IsChecked = false;
-                            break;
-
-                        case CheckAction.Select:
-                            if (dataGrid.SelectedItems.Contains(item))
-                            {
-                                checkBox.IsChecked = true;
-                                checkedCount++;
-                            }
-                            else
-                            {
-                                checkBox.IsChecked = false;
-                            }
-                            break;
-                    }
+                // Обновляем свойство в данных через рефлексию
+                var property = item.GetType().GetProperty(bindingPath);
+                if (property?.PropertyType == typeof(bool))
+                {
+                    property.SetValue(item, shouldCheck);
+                    if (shouldCheck) checkedCount++;
                 }
             }
 
+            // Обновляем DataGrid (если нужно)
+            dataGrid.Items.Refresh();
             return checkedCount;
         }
 

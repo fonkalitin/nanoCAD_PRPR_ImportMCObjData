@@ -15,8 +15,7 @@
         <DataGrid 
     x:Name="dataGrid" 
     AutoGenerateColumns="False" 
-    Margin="16,68,65,168" 
-    Width="969" 
+    Margin="16,68,45,168" 
     d:ItemsSource="{d:SampleData ItemCount=5}" 
     Grid.ColumnSpan="2">
 
@@ -35,11 +34,12 @@
         </DataGrid>
 
         <TextBox x:Name="searchTextBox" HorizontalAlignment="Left" Height="19" Margin="16,31,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="148" KeyUp="SearchTextBox_KeyUp"/>
-        <TextBlock x:Name="resultTextBlock" HorizontalAlignment="Left" Height="19" Margin="194,31,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="175"/>
-        <Button x:Name="CheckAll" Content="Выбрать все позиции" HorizontalAlignment="Left" Height="19" Margin="448,31,0,0" VerticalAlignment="Top" Width="142" Click="CheckAll_Click"/>
-        <Button x:Name="CheckNone" Content="Снять выбор" HorizontalAlignment="Left" Height="19" Margin="603,31,0,0" VerticalAlignment="Top" Width="98" Click="CheckNone_Click"/>
-        <Button x:Name="CheckSelected" Content="Выбрать выделенные" HorizontalAlignment="Left" Height="19" Margin="729,31,0,0" VerticalAlignment="Top" Width="142" Click="CheckSelected_Click"/>
-        <TextBlock x:Name="SelectedCount" HorizontalAlignment="Left" Height="19" Margin="387,31,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="51"/>
+        <TextBlock x:Name="resultTextBlock" HorizontalAlignment="Left" Height="19" Margin="181,31,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="175"/>
+        <Button x:Name="CheckAll" Content="Выбрать все позиции" HorizontalAlignment="Left" Height="19" Margin="440,31,0,0" VerticalAlignment="Top" Width="142" Click="CheckAll_Click"/>
+        <Button x:Name="CheckNone" Content="Снять выбор" HorizontalAlignment="Left" Height="19" Margin="592,31,0,0" VerticalAlignment="Top" Width="98" Click="CheckNone_Click"/>
+        <Button x:Name="CheckSelected" Content="Выбрать выделенные" HorizontalAlignment="Left" Height="19" Margin="698,31,0,0" VerticalAlignment="Top" Width="142" Click="CheckSelected_Click"/>
+        <TextBlock x:Name="SelectedCount" HorizontalAlignment="Left" Height="19" Margin="377,31,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="51"/>
+        <Button x:Name="ExportToCsvBtn" Content="Экспорт в таблицу CSV" HorizontalAlignment="Left" Height="19" Margin="862,31,0,0" VerticalAlignment="Top" Width="143" Click="ExportToCsvBtn_Click" Grid.ColumnSpan="2"/>
 
     </Grid>
 </Window>
