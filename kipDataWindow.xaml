@@ -15,7 +15,7 @@
         <DataGrid 
     x:Name="dataGrid" 
     AutoGenerateColumns="False" 
-    Margin="16,68,45,168" 
+    Margin="16,68,45,108" 
     d:ItemsSource="{d:SampleData ItemCount=5}" 
     Grid.ColumnSpan="2">
 
@@ -39,7 +39,9 @@
         <Button x:Name="CheckNone" Content="Снять выбор" HorizontalAlignment="Left" Height="19" Margin="592,31,0,0" VerticalAlignment="Top" Width="98" Click="CheckNone_Click"/>
         <Button x:Name="CheckSelected" Content="Выбрать выделенные" HorizontalAlignment="Left" Height="19" Margin="698,31,0,0" VerticalAlignment="Top" Width="142" Click="CheckSelected_Click"/>
         <TextBlock x:Name="SelectedCount" HorizontalAlignment="Left" Height="19" Margin="377,31,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="51"/>
-        <Button x:Name="ExportToCsvBtn" Content="Экспорт в таблицу CSV" HorizontalAlignment="Left" Height="19" Margin="862,31,0,0" VerticalAlignment="Top" Width="143" Click="ExportToCsvBtn_Click" Grid.ColumnSpan="2"/>
+        <Button x:Name="ExportToCsvBtn" Content="Экспорт в таблицу CSV" HorizontalAlignment="Left" Height="23" Margin="439,646,0,0" VerticalAlignment="Top" Width="143" Click="ExportToCsvBtn_Click"/>
+        <Button x:Name="ExportToXlsxBtn" Content="Экспорт в таблицу XLSX" HorizontalAlignment="Left" Height="23" Margin="439,674,0,0" VerticalAlignment="Top" Width="143" Click="ExportToXlsxBtn_Click"/>
+        <CheckBox x:Name="ExportHeaders" Content="Выводить заголовки столбцов" HorizontalAlignment="Left" Height="21" Margin="592,662,0,0" VerticalAlignment="Top" Width="208" Checked="ExportHeaders_Checked"/>
 
     </Grid>
 </Window>

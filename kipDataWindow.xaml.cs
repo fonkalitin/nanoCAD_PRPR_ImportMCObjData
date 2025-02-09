@@ -42,7 +42,7 @@ namespace PRPR_ImportMCObjData
             };
         }
 
-
+        
         public KIPdataWindow()
         {
             InitializeComponent();
@@ -169,7 +169,17 @@ namespace PRPR_ImportMCObjData
 
         private void ExportToCsvBtn_Click(object sender, RoutedEventArgs e)
         {
-            ExportToCSV.ExportToCsv(dataGrid, "C:\\tmp\\KIPdata.csv");
+            ExportToCSV.ExportToCsv(dataGrid, ExportHeaders.IsChecked.Value, "C:\\tmp\\KIPdata.csv");
+        }
+
+        private void ExportToXlsxBtn_Click(object sender, RoutedEventArgs e)
+        {
+            ExportToXLSX.ExportToExcel(dataGrid, ExportHeaders.IsChecked.Value, "C:\\tmp\\KIPdata.xlsx");
+        }
+
+        private void ExportHeaders_Checked(object sender, RoutedEventArgs e)
+        {
+
         }
     }
 }

@@ -1,14 +1,12 @@
-﻿using System;
-using System.Globalization;
+﻿using System.Globalization;
 using System.IO;
-using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
 
 class ExportToCSV
 {
-    public static void ExportToCsv(DataGrid dataGrid, string filePath)
+    public static void ExportToCsv(DataGrid dataGrid, bool exportHeaders, string filePath)
     {
         if (dataGrid.Columns.Count < 2)
             throw new InvalidOperationException("DataGrid должен иметь как минимум два столбца.");
@@ -24,8 +22,11 @@ class ExportToCSV
 
         using (var writer = new StreamWriter(filePath, false, new System.Text.UTF8Encoding(true)))
         {
-            var headers = dataGrid.Columns.Skip(1).Select(c => $"\"{c.Header?.ToString()?.Trim() ?? ""}\"");
-            writer.WriteLine(string.Join(";", headers));
+            if (exportHeaders)
+            {
+                var headers = dataGrid.Columns.Skip(1).Select(c => $"\"{c.Header?.ToString()?.Trim() ?? ""}\"");
+                writer.WriteLine(string.Join(";", headers));
+            }
 
             foreach (var item in dataGrid.Items)
             {
@@ -46,7 +47,6 @@ class ExportToCSV
                         else
                             text = Convert.ToString(value)?.Trim() ?? "";
 
-                        // Проверка на дробное число и замена точки на запятую
                         if (double.TryParse(text, NumberStyles.Any, CultureInfo.InvariantCulture, out _))
                             text = text.Replace('.', ',');
 

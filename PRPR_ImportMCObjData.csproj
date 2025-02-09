@@ -13,6 +13,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Reference Include="DocumentFormat.OpenXml">
+      <HintPath>..\nanoCAD_PRPR_XlsTableToParams\bin\x64\Debug\net6.0-windows\DocumentFormat.OpenXml.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="hostdbmgd">
       <HintPath>\nCAD 24.1 API\include-x64\hostdbmgd.dll</HintPath>
       <Private>False</Private>
