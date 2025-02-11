@@ -41,7 +41,7 @@ namespace PRPR_ImportMCObjData
 
                 // Пропуск неотмеченных строк
                 if (!GetCheckBoxValue(item, checkBoxPropertyPath)) continue;
-                if (i > selectedObjectsID.Length) break; // Защита от выхода за пределы
+                if (i >= selectedObjectsID.Length) break; // Защита от выхода за пределы (если достигнут максимум то стоп)
 
                 // Получаем выбранный объект для текущей строки
                 McObjectId selectedObjID = selectedObjectsID[i];

@@ -1,4 +1,5 @@
-﻿using Multicad;
+﻿using DocumentFormat.OpenXml.Bibliography;
+using Multicad;
 using System.Collections.ObjectModel;
 using System.Windows;
 using System.Windows.Controls;
@@ -179,10 +180,13 @@ namespace PRPR_ImportMCObjData
         private void LoadDataToObjBtn_Click(object sender, RoutedEventArgs e)
         {
 
+            HostMgd.EditorInput.Editor ed = Tools.CadCommand.getActiveDocEditor();
             IDsCollector selectionHandler = new IDsCollector(Tools.CadCommand.getActiveDocEditor(), "Выберите объекты на чертеже для загрузки в них данных");
             McObjectId[] idsObjSelected = selectionHandler.GetSelectedIds();
 
-            DataGridToObjects.ProcessDataGridToObjects(dataGrid, idsObjSelected);   
+            DataGridToObjects.ProcessDataGridToObjects(dataGrid, idsObjSelected);
+
+            ed.Command("REGENALL");
         }
     }
 }
