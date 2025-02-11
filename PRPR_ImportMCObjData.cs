@@ -47,7 +47,7 @@ namespace Tools
         public static void PRPR_ImportMCObjData()
         {
             MainWindow mainWin = new MainWindow();
-            mainWin.ShowDialog();
+            mainWin.Show();
         }
 
         /// <summary>
@@ -97,19 +97,25 @@ namespace Tools
         }
 
 
-       
+
 
         /// <summary>
         /// Активатор открытого документа по его имени
         /// </summary>
         public static void activateDwgDocByName(string dwgDocName)
         {
-
             McDocument doc = McDocument.GetDocument(dwgDocName); // Получение документа по его имени
             doc.Activate(); // Активация документа
-
         }
 
+        /// <summary>
+        /// Возвращает эдитор активного документа
+        /// </summary>
+        public static Ed.Editor getActiveDocEditor(){
+        App.Document doc = App.Application.DocumentManager.MdiActiveDocument;
+        Ed.Editor ed = doc.Editor;
+            return ed;
+        }
     }
 }
 

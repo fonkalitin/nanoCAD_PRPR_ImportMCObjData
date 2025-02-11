@@ -1,20 +1,12 @@
 ﻿using Multicad;
-using System;
-using System.Collections;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Linq;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
+
+
 
 namespace PRPR_ImportMCObjData
 {
@@ -35,10 +27,10 @@ namespace PRPR_ImportMCObjData
             return new List<AttributeMapping>
             {
                 new AttributeMapping { AttributeName = "IsSelected", DisplayName = "Выбор" },
-                new AttributeMapping { AttributeName = "Pos", DisplayName = "Позиция" },
-                new AttributeMapping { AttributeName = "Proc_Place_Name", DisplayName = "Место установки" },
-                new AttributeMapping { AttributeName = "Media_WTemp", DisplayName = "Температура" },
-                new AttributeMapping { AttributeName = "Media_WPress", DisplayName = "Давление" }
+                new AttributeMapping { AttributeName = "pos", DisplayName = "Позиция" },
+                new AttributeMapping { AttributeName = "proc_place_name", DisplayName = "Место установки" },
+                new AttributeMapping { AttributeName = "media_wtemp", DisplayName = "Температура" },
+                new AttributeMapping { AttributeName = "media_wpress", DisplayName = "Давление" }
             };
         }
 
@@ -72,10 +64,10 @@ namespace PRPR_ImportMCObjData
                 var parameterData = new ParameterData
                 {
                     IsSelected = false, // По умолчанию
-                    Pos = attributeValues[1].Value.ToString(),
-                    Proc_Place_Name = attributeValues[2].Value.ToString(),
-                    Media_WTemp = attributeValues[3].Value.ToString(),
-                    Media_WPress = attributeValues[4].Value.ToString()
+                    pos = attributeValues[1].Value.ToString(),
+                    proc_place_name = attributeValues[2].Value.ToString(),
+                    media_wtemp = attributeValues[3].Value.ToString(),
+                    media_wpress = attributeValues[4].Value.ToString()
                 };
 
                 Parameters.Add(parameterData);
@@ -122,10 +114,10 @@ namespace PRPR_ImportMCObjData
         public class ParameterData
         {
             public bool IsSelected { get; set; } // Для чекбокса выбора
-            public string Pos { get; set; } // Позиция
-            public string Proc_Place_Name { get; set; } // Место установки
-            public string Media_WTemp { get; set; } // Температура
-            public string Media_WPress { get; set; } // Давление
+            public string pos { get; set; } // Позиция
+            public string proc_place_name { get; set; } // Место установки
+            public string media_wtemp { get; set; } // Температура
+            public string media_wpress { get; set; } // Давление
         }
 
         public class AttributeMapping
@@ -182,6 +174,15 @@ namespace PRPR_ImportMCObjData
         private void ExportHeaders_Checked(object sender, RoutedEventArgs e)
         {
 
+        }
+
+        private void LoadDataToObjBtn_Click(object sender, RoutedEventArgs e)
+        {
+
+            IDsCollector selectionHandler = new IDsCollector(Tools.CadCommand.getActiveDocEditor(), "Выберите объекты на чертеже для загрузки в них данных");
+            McObjectId[] idsObjSelected = selectionHandler.GetSelectedIds();
+
+            DataGridToObjects.ProcessDataGridToObjects(dataGrid, idsObjSelected);   
         }
     }
 }

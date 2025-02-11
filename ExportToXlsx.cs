@@ -92,7 +92,7 @@ namespace PRPR_ImportMCObjData
                             if (bindingPath == null) continue;
 
                             // Получение значения и создание ячейки
-                            var value = BindingEvaluator.GetValue(item, bindingPath);
+                            var value = ExportToCSV.BindingEvaluator.GetValue(item, bindingPath);
                             var cell = CreateCellWithValue(value, culture);
                             dataRow.Append(cell);
                         }
@@ -184,45 +184,10 @@ namespace PRPR_ImportMCObjData
         /// <returns>Состояние чекбокса</returns>
         private static bool GetCheckBoxValue(object item, string propertyPath)
         {
-            var value = BindingEvaluator.GetValue(item, propertyPath);
+            var value = ExportToCSV.BindingEvaluator.GetValue(item, propertyPath);
             return value is bool b && b;
         }
 
-        /// <summary>
-        /// Вспомогательный класс для работы с привязками данных
-        /// </summary>
-        public static class BindingEvaluator
-        {
-            /// <summary>
-            /// Получает значение свойства через систему привязок WPF
-            /// </summary>
-            public static object GetValue(object source, string propertyPath)
-            {
-                var binding = new Binding(propertyPath)
-                {
-                    Source = source,
-                    Mode = BindingMode.OneTime
-                };
-
-                var dummy = new DummyObject();
-                BindingOperations.SetBinding(dummy, DummyObject.ValueProperty, binding);
-                return dummy.Value; // Возврат вычисленного значения
-            }
-
-            /// <summary>
-            /// Вспомогательный DependencyObject для получения значений привязки
-            /// </summary>
-            private class DummyObject : DependencyObject
-            {
-                public static readonly DependencyProperty ValueProperty =
-                    DependencyProperty.Register("Value", typeof(object), typeof(DummyObject));
-
-                public object Value
-                {
-                    get => GetValue(ValueProperty);
-                    set => SetValue(ValueProperty, value);
-                }
-            }
-        }
+        
     }
 }
