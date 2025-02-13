@@ -52,35 +52,43 @@ namespace PRPR_ImportMCObjData
                 // Ищем объект с соответствующим значением pos
                 foreach (var (objId, objPos) in collectedData)
                 {
+
                     // Если позиция совпадает
                     if (objPos == gridPos)
                     {
-                        // Проверяем, нужно ли пропускать подтверждение
-                        if (string.IsNullOrEmpty(objPos) || objPos == "INST" || objPos == "POS")
+                        // Выводим сообщение с вопросом (WPF MessageBox)
+                        MessageBoxResult result = MessageBox.Show(
+                            $"Данная поз: {objPos} существует в чертеже. Хотите обновить в ней все данные?",
+                            "Подтверждение обновления",
+                            MessageBoxButton.YesNo, // Кнопки "Да" и "Нет"
+                            MessageBoxImage.Question  // Иконка вопроса
+                        );
+
+                        // Если пользователь выбрал "Да"
+                        if (result == MessageBoxResult.Yes)
                         {
-                            // Добавляем объект в список выбранных без подтверждения
+                            // Добавляем объект в список выбранных
                             selectedObjectsID.Add(objId);
+                            break; // Прерываем цикл, так как позиция уже найдена
                         }
-                        else
-                        {
-                            // Выводим сообщение с вопросом (WPF MessageBox)
-                            MessageBoxResult result = MessageBox.Show(
-                                $"Данная поз: {objPos} существует в чертеже. Хотите обновить в ней все данные?",
-                                "Подтверждение обновления",
-                                MessageBoxButton.YesNo, // Кнопки "Да" и "Нет"
-                                MessageBoxImage.Question  // Иконка вопроса
-                            );
-
-                            // Если пользователь выбрал "Да"
-                            if (result == MessageBoxResult.Yes)
-                            {
-                                // Добавляем объект в список выбранных
-                                selectedObjectsID.Add(objId);
-                            }
-                        }
-
-                        break; // Прерываем цикл, так как позиция уже найдена
                     }
+
+                    // Проверяем, нужно ли пропускать подтверждение
+                    else if (string.IsNullOrEmpty(objPos) || objPos == "INST" || objPos == "POS")
+                    {
+                        // Добавляем объект в список выбранных без подтверждения
+                        selectedObjectsID.Add(objId);
+                        //break; // Прерываем цикл, так как позиция уже найдена
+                    }
+
+                    else {
+                        //MessageBoxResult result = MessageBox.Show(
+                            //$"поз: {objPos} не распознана. Пропущено");
+                        //break;
+                    }
+
+
+
                 }
 
                 // Загружаем данные в выбранные объекты
