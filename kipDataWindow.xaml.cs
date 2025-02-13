@@ -188,5 +188,12 @@ namespace PRPR_ImportMCObjData
 
             ed.Command("REGENALL");
         }
+
+        private void AutoLoadDataToObjBtn_Click(object sender, RoutedEventArgs e)
+        {
+            LoadDataToKipObjects.AutoLoadDataToKipObjects(dataGrid);
+            HostMgd.EditorInput.Editor ed = Tools.CadCommand.getActiveDocEditor();
+            ed.Command("REGENALL");
+        }
     }
 }

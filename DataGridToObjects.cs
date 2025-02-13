@@ -81,7 +81,7 @@ namespace PRPR_ImportMCObjData
         }
 
         // Вспомогательный метод для получения значения чекбокса
-        private static bool GetCheckBoxValue(object item, string propertyPath)
+        public static bool GetCheckBoxValue(object item, string propertyPath)
         {
             var propertyInfo = item.GetType().GetProperty(propertyPath);
             return propertyInfo != null && (bool)propertyInfo.GetValue(item);

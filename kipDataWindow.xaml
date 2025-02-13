@@ -42,7 +42,8 @@
         <Button x:Name="ExportToCsvBtn" Content="Экспорт в таблицу CSV" HorizontalAlignment="Left" Height="23" Margin="439,646,0,0" VerticalAlignment="Top" Width="143" Click="ExportToCsvBtn_Click"/>
         <Button x:Name="ExportToXlsxBtn" Content="Экспорт в таблицу XLSX" HorizontalAlignment="Left" Height="23" Margin="439,674,0,0" VerticalAlignment="Top" Width="143" Click="ExportToXlsxBtn_Click"/>
         <CheckBox x:Name="ExportHeaders" Content="Выводить заголовки столбцов" HorizontalAlignment="Left" Height="21" Margin="592,662,0,0" VerticalAlignment="Top" Width="208" Checked="ExportHeaders_Checked"/>
-        <Button x:Name="LoadDataToObjBtn" Content="&lt;&lt;&lt; Загрузка в объекты чертежа" HorizontalAlignment="Left" Height="21" Margin="198,662,0,0" VerticalAlignment="Top" Width="204" Click="LoadDataToObjBtn_Click"/>
+        <Button x:Name="LoadDataToObjBtn" Content="&lt;&lt;&lt; Загрузка в объекты чертежа" HorizontalAlignment="Left" Height="21" Margin="198,646,0,0" VerticalAlignment="Top" Width="204" Click="LoadDataToObjBtn_Click"/>
+        <Button x:Name="AutoLoadDataToObjBtn" Content="Автозагрузка данных в КИП" HorizontalAlignment="Left" Height="22" Margin="198,675,0,0" VerticalAlignment="Top" Width="204" Click="AutoLoadDataToObjBtn_Click"/>
 
     </Grid>
 </Window>
