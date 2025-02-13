@@ -249,6 +249,7 @@ namespace nanoCAD_PRPR_WPF
         {
             // Созадаем экземпляр класса окна с данными и показываем его
             var KIPdataWindow = new KIPdataWindow();
+            KIPdataWindow.Topmost = true;
             KIPdataWindow.Show();
             
         }

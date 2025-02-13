@@ -47,7 +47,9 @@ namespace Tools
         public static void PRPR_ImportMCObjData()
         {
             MainWindow mainWin = new MainWindow();
+            mainWin.Topmost = true;
             mainWin.Show();
+
         }
 
         /// <summary>
