@@ -53,7 +53,10 @@ namespace PRPR_ImportMCObjData
                     var column = dataGrid.Columns[iCol] as DataGridBoundColumn;
                     if (column == null) continue;
 
+                    // Извлекаем имя атрибута из биндинга
                     var bindingPath = (column.Binding as Binding)?.Path.Path;
+                    string attributeName = bindingPath.Replace("Attributes[", "").Replace("]", "");
+
                     if (bindingPath == null) continue;
 
                     // Получаем значение из DataGrid
@@ -65,16 +68,16 @@ namespace PRPR_ImportMCObjData
                     // Записываем значение в объект
                     if (currObj is McUMarker currUmarker)
                     {
-                        currUmarker.DbEntity.ObjectProperties[bindingPath] = paramValue;
+                        currUmarker.DbEntity.ObjectProperties[attributeName] = paramValue;
                         //currUmarker.HighLightObjects(true, Color.LightYellow); // Подсветка связанных объектов
                     }
                     else if (currObj is McParametricObject currParObject)
                     {
-                        currParObject.DbEntity.ObjectProperties[bindingPath] = paramValue;
+                        currParObject.DbEntity.ObjectProperties[attributeName] = paramValue;
                     }
                     else if (currObj is McTable currTableObject)
                     {
-                        currTableObject.DbEntity.ObjectProperties[bindingPath] = paramValue;
+                        currTableObject.DbEntity.ObjectProperties[attributeName] = paramValue;
                     }
                 }
             }

@@ -1,11 +1,14 @@
 ﻿using DocumentFormat.OpenXml.Bibliography;
 using Multicad;
 using System.Collections.ObjectModel;
+using System.Reflection;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Input;
 using System.Windows.Media;
+using System.Text;
+using System.IO;
 
 
 
@@ -17,23 +20,12 @@ namespace PRPR_ImportMCObjData
     /// </summary>
     public partial class KIPdataWindow : Window
     {
-        //private CancellationTokenSource _cancellationTokenSource;
 
         // Коллекция для хранения данных параметров
         public ObservableCollection<ParameterData> Parameters { get; set; }
 
-        // Метод получения сопоставлений атрибутов
-        public static List<AttributeMapping> GetAttributeMappings()
-        {
-            return new List<AttributeMapping>
-            {
-                new AttributeMapping { AttributeName = "IsSelected", DisplayName = "Выбор" },
-                new AttributeMapping { AttributeName = "pos", DisplayName = "Позиция" },
-                new AttributeMapping { AttributeName = "proc_place_name", DisplayName = "Место установки" },
-                new AttributeMapping { AttributeName = "media_wtemp", DisplayName = "Температура" },
-                new AttributeMapping { AttributeName = "media_wpress", DisplayName = "Давление" }
-            };
-        }
+        // Получение фактического пути расположения данной сборки dll
+        public string dllFolder = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
 
         
         public KIPdataWindow()
@@ -41,90 +33,165 @@ namespace PRPR_ImportMCObjData
             InitializeComponent();
             Parameters = new ObservableCollection<ParameterData>();
             PopulateDataGrid();
+
         }
 
+
+        /// <summary>
+        /// Загружает настройки из CSV файла.
+        /// Формат CSV:
+        /// Строка 1: [Имя объекта], [DisplayName1], [DisplayName2], ...
+        /// Строка 2: [пусто],       [AttributeName1], [AttributeName2], ...
+        /// </summary>
+        private (string ObjectName, List<AttributeMapping> Mappings) LoadSettingsFromCsv()
+        {
+            string csvPath = Path.Combine(dllFolder, "AttributeMappings.csv"); // Путь к CSV файлу
+            var mappings = new List<AttributeMapping>();
+            string objectName = string.Empty;
+
+            try
+            {
+                // Проверяем существование файла
+                if (!File.Exists(csvPath))
+                {
+                    MessageBox.Show($"Файл настроек {csvPath} не найден");
+                    return (objectName, mappings);
+                }
+
+                // Читаем все строки файла
+                var lines = File.ReadAllLines(csvPath, Encoding.GetEncoding("windows-1251"));
+
+                // Проверяем минимальное требование - 2 строки
+                if (lines.Length < 2)
+                {
+                    MessageBox.Show("Некорректный формат CSV файла");
+                    return (objectName, mappings);
+                }
+
+                // Разбиваем строки на колонки
+                var header = lines[0].Split(';'); // Первая строка: имя объекта и DisplayName
+                var attributes = lines[1].Split(';'); // Вторая строка: пусто и AttributeName
+
+                // Имя объекта берется из первой ячейки первой строки
+                objectName = header[0].Trim();
+
+                // Обрабатываем колонки начиная с индекса 1
+                for (int i = 1; i < Math.Min(header.Length, attributes.Length); i++)
+                {
+                    // Проверяем, что значения не пустые
+                    if (!string.IsNullOrWhiteSpace(header[i]) && !string.IsNullOrWhiteSpace(attributes[i]))
+                    {
+                        mappings.Add(new AttributeMapping
+                        {
+                            DisplayName = header[i].Trim(), // DisplayName из первой строки
+                            AttributeName = attributes[i].Trim() // AttributeName из второй строки
+                        });
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Ошибка загрузки настроек: {ex.Message}");
+            }
+
+            return (objectName, mappings);
+        }
+
+        /// <summary>
+        /// Заполняет DataGrid данными.
+        /// </summary>
         private void PopulateDataGrid()
         {
-            // Используем ваш список атрибутов
-            var attributesList = new List<string> { "pos", "proc_place_name", "media_wtemp", "media_wpress" };
-            attributesList.Insert(0, "IsSelected"); // Добавляем для чекбокса
+            // Загружаем настройки из CSV
+            var (objectName, mappings) = LoadSettingsFromCsv();
+
+            // Проверяем, что настройки загружены
+            if (string.IsNullOrEmpty(objectName) || mappings.Count == 0)
+            {
+                MessageBox.Show("Ошибка загрузки настроек");
+                return;
+            }
+
+            // Получаем список имен атрибутов для запроса данных
+            var attributesList = mappings.Select(m => m.AttributeName).ToList();
 
             // Получаем данные через метод
-            var data = PRPR_METHODS.PRPR_METHODS.CollectParObjData("Первичный КИПиА v0.6", attributesList, 0);
+            var data = PRPR_METHODS.PRPR_METHODS.CollectParObjData(objectName, attributesList, 0);
 
             // Проверяем, что данные получены
             if (data == null || data.Count == 0)
             {
-                MessageBox.Show("Нет данных для отображения.");
+                MessageBox.Show("Нет данных для отображения");
                 return;
             }
 
-            // Наполняем коллекцию ObservableCollection
+            // Наполняем коллекцию Parameters
             foreach (var attributeValues in data)
             {
-                var parameterData = new ParameterData
+                var parameterData = new ParameterData();
+
+                // Заполняем значения атрибутов
+                for (int i = 0; i < mappings.Count; i++)
                 {
-                    IsSelected = false, // По умолчанию
-                    pos = attributeValues[1].Value.ToString(),
-                    proc_place_name = attributeValues[2].Value.ToString(),
-                    media_wtemp = attributeValues[3].Value.ToString(),
-                    media_wpress = attributeValues[4].Value.ToString()
-                };
+                    parameterData.Attributes[mappings[i].AttributeName] =
+                        attributeValues[i].Value?.ToString() ?? string.Empty;
+                }
 
                 Parameters.Add(parameterData);
             }
 
-            // Проверяем содержимое ObservableCollection
-            if (Parameters.Count == 0)
-            {
-                MessageBox.Show("ObservableCollection пустая.");
-                return;
-            }
-
+            // Устанавливаем источник данных для DataGrid
             dataGrid.ItemsSource = Parameters;
 
             // Создаем динамические столбцы
-            CreateDynamicColumns();
+            CreateDynamicColumns(mappings);
         }
 
-        private void CreateDynamicColumns()
+        /// <summary>
+        /// Создает динамические столбцы в DataGrid.
+        /// </summary>
+        private void CreateDynamicColumns(List<AttributeMapping> mappings)
         {
-            // Получаем сопоставления атрибутов
-            var attributeMappings = GetAttributeMappings();
+            // Очищаем существующие колонки
+            dataGrid.Columns.Clear();
 
-            // Добавление чекбокса в первый столбец
-            DataGridCheckBoxColumn checkBoxColumn = new DataGridCheckBoxColumn
+            // Добавляем колонку с чекбоксом
+            dataGrid.Columns.Add(new DataGridCheckBoxColumn
             {
                 Header = "Выбор",
                 Binding = new Binding("IsSelected")
-            };
-            dataGrid.Columns.Add(checkBoxColumn);
+            });
 
-            // Создание остальных столбцов
-            foreach (var mapping in attributeMappings.Where(m => m.AttributeName != "IsSelected"))
+            // Создаем колонки для атрибутов
+            foreach (var mapping in mappings)
             {
-                DataGridTextColumn textColumn = new DataGridTextColumn
+                dataGrid.Columns.Add(new DataGridTextColumn
                 {
                     Header = mapping.DisplayName,
-                    Binding = new Binding(mapping.AttributeName)
-                };
-                dataGrid.Columns.Add(textColumn);
+                    Binding = new Binding($"Attributes[{mapping.AttributeName}]")
+                });
             }
         }
 
+        /// <summary>
+        /// Класс для хранения данных параметров.
+        /// </summary>
         public class ParameterData
         {
-            public bool IsSelected { get; set; } // Для чекбокса выбора
-            public string pos { get; set; } // Позиция
-            public string proc_place_name { get; set; } // Место установки
-            public string media_wtemp { get; set; } // Температура
-            public string media_wpress { get; set; } // Давление
+            // Свойство для чекбокса
+            public bool IsSelected { get; set; }
+
+            // Словарь для хранения значений атрибутов
+            public Dictionary<string, string> Attributes { get; } = new Dictionary<string, string>();
         }
 
+        /// <summary>
+        /// Класс для связи отображаемых имен и атрибутов.
+        /// </summary>
         public class AttributeMapping
         {
-            public string AttributeName { get; set; }
-            public string DisplayName { get; set; }
+            public string DisplayName { get; set; } // Отображаемое имя в интерфейсе
+            public string AttributeName { get; set; } // Имя атрибута в данных
         }
 
         /// <summary>

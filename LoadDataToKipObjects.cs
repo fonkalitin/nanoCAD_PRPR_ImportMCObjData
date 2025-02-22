@@ -43,8 +43,9 @@ namespace PRPR_ImportMCObjData
                 // Проверяем, отмечена ли галочка в строке через биндинг
                 if (!DataGridToObjects.GetCheckBoxValue(row, checkBoxPropertyPath)) continue;
 
-                // Получаем значение pos из текущей строки DataGrid (предполагается, что второй столбец — свойство "Pos")
-                string gridPos = (row as ParameterData)?.pos; // Доступ к свойству Pos объекта ParameterData
+                // Получаем значение атрибута "pos" из текущей строки DataGrid
+                string gridPos = (row as ParameterData)?.Attributes["pos"];
+
 
                 // Если позиция не указана, пропускаем строку
                 if (string.IsNullOrEmpty(gridPos)) continue;
@@ -78,16 +79,7 @@ namespace PRPR_ImportMCObjData
                     {
                         // Добавляем объект в список выбранных без подтверждения
                         selectedObjectsID.Add(objId);
-                        //break; // Прерываем цикл, так как позиция уже найдена
                     }
-
-                    else {
-                        //MessageBoxResult result = MessageBox.Show(
-                            //$"поз: {objPos} не распознана. Пропущено");
-                        //break;
-                    }
-
-
 
                 }
 
