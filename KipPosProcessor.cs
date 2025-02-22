@@ -16,85 +16,19 @@ using Teigha.DatabaseServices;
 using System.Windows;
 using Teigha.LayerManager;
 using System.Windows.Media;
+using static InternalEnums.KipPosProcessMode;
+using InternalEnums;
 
 namespace PRPR_ImportMCObjData
 {
-    internal class LoadDataToKipObjects
+    public class KipPosProcessor
     {
 
+
         /// <summary>
-        /// Метод выполняет автоматическуюзагрузку значений всех атрибутов в обьекты с позициями pos 
-        /// соответствующими таблице dataGrid
+        /// Метод выполняет автоматическую загрузку значений всех атрибутов в обьекты с позициями pos 
+        /// соответствующими таблице dataGrid. Либо выполняет только проверку на наличие позиций в чертеже
         /// </summary>
-        public static void AutoLoadDataToKipObjects(DataGrid dataGrid)
-        {
-
-            // Получаем все объекты с атрибутом pos
-            string parObjCommonName = "КИПиА";
-            List<string> attributesList = new List<string> { "pos" };
-            int collectArea = 1;
-            List<(McObjectId, string)> collectedData = CollectKipPosObjIds(parObjCommonName, attributesList, collectArea);
-
-            // Получаем путь к свойству чекбокса из первого столбца
-            var checkBoxColumn = dataGrid.Columns[0] as DataGridCheckBoxColumn;
-            string checkBoxPropertyPath = (checkBoxColumn.Binding as Binding).Path.Path;
-
-            // Создаем список McObjectId для выбранных объектов
-            List<McObjectId> selectedObjectsID = new List<McObjectId>();
-
-            // Проходим по каждой строке в DataGrid (предполагается, что ItemsSource — ObservableCollection<ParameterData>)
-            foreach (var row in dataGrid.Items)
-            {
-                // Проверяем, отмечена ли галочка в строке через биндинг
-                if (!DataGridToObjects.GetCheckBoxValue(row, checkBoxPropertyPath)) continue;
-
-                // Получаем значение атрибута "pos" из текущей строки DataGrid
-                string gridPos = (row as ParameterData)?.Attributes["pos"];
-
-
-                // Если позиция не указана, пропускаем строку
-                if (string.IsNullOrEmpty(gridPos)) continue;
-
-                // Ищем объект с соответствующим значением pos
-                foreach (var (objId, objPos) in collectedData)
-                {
-
-                    // Если позиция совпадает
-                    if (objPos == gridPos)
-                    {
-                        // Выводим сообщение с вопросом (WPF MessageBox)
-                        MessageBoxResult result = MessageBox.Show(
-                            $"Данная поз: {objPos} существует в чертеже. Хотите обновить в ней все данные?",
-                            "Подтверждение обновления",
-                            MessageBoxButton.YesNo, // Кнопки "Да" и "Нет"
-                            MessageBoxImage.Question  // Иконка вопроса
-                        );
-
-                        // Если пользователь выбрал "Да"
-                        if (result == MessageBoxResult.Yes)
-                        {
-                            // Добавляем объект в список выбранных
-                            selectedObjectsID.Add(objId);
-                            break; // Прерываем цикл, так как позиция уже найдена
-                        }
-                    }
-
-                    // Проверяем, нужно ли пропускать подтверждение
-                    else if (string.IsNullOrEmpty(objPos) || objPos == "INST" || objPos == "POS")
-                    {
-                        // Добавляем объект в список выбранных без подтверждения
-                        selectedObjectsID.Add(objId);
-                    }
-
-                }
-
-                // Загружаем данные в выбранные объекты
-                DataGridToObjects.ProcessDataGridToObjects(dataGrid, selectedObjectsID.ToArray());
-            }
-
-        }
-
-
         public static void AutoLoadDataToKipObjects(DataGrid dataGrid, string parObjCommonName = "КИПиА", bool onlyCheckPos = false)
         {
             // Получаем все объекты с атрибутом pos
@@ -186,6 +120,98 @@ namespace PRPR_ImportMCObjData
                 DataGridToObjects.ProcessDataGridToObjects(dataGrid, selectedObjectsID.ToArray());
             }
         }
+
+        public static void KipPosTotalAgregator(DataGrid dataGrid, string parObjCommonName = "КИПиА", KipPosProcessMode mode = AutoLoadAndHighlight)
+        {
+            // Получаем все объекты с атрибутом pos
+            List<string> attributesList = new List<string> { "pos" };
+            int collectArea = 1;
+            List<(McObjectId, string)> collectedData = CollectKipPosObjIds(parObjCommonName, attributesList, collectArea);
+
+            // Получаем путь к свойству чекбокса из первого столбца
+            var checkBoxColumn = dataGrid.Columns[0] as DataGridCheckBoxColumn;
+            string checkBoxPropertyPath = (checkBoxColumn.Binding as Binding).Path.Path;
+
+            // Создаем список McObjectId для выбранных объектов
+            List<McObjectId> selectedObjectsID = new List<McObjectId>();
+
+            // Проходим по каждой строке в DataGrid
+            foreach (var row in dataGrid.Items)
+            {
+                // Проверяем, отмечена ли галочка в строке через биндинг
+                if (!DataGridToObjects.GetCheckBoxValue(row, checkBoxPropertyPath)) continue;
+
+                // Получаем значение атрибута "pos" из текущей строки DataGrid
+                string gridPos = (row as ParameterData)?.Attributes["pos"];
+
+                // Если позиция не указана, пропускаем строку
+                if (string.IsNullOrEmpty(gridPos)) continue;
+
+                // Ищем объект с соответствующим значением pos
+                bool isFound = false;
+                foreach (var (objId, objPos) in collectedData)
+                {
+                    if (objPos == gridPos)
+                    {
+                        isFound = true;
+
+                        // Если режим включает автозагрузку (AutoLoadData или AutoLoadAndHighlight)
+                        if (mode == KipPosProcessMode.AutoLoadData || mode == KipPosProcessMode.AutoLoadAndHighlight)
+                        {
+                            MessageBoxResult result = MessageBox.Show(
+                                $"Данная поз: {objPos} существует в чертеже. Хотите обновить в ней все данные?",
+                                "Подтверждение обновления",
+                                MessageBoxButton.YesNo,
+                                MessageBoxImage.Question
+                            );
+
+                            if (result == MessageBoxResult.Yes)
+                            {
+                                selectedObjectsID.Add(objId);
+                                break;
+                            }
+                        }
+                    }
+                    // Проверяем, нужно ли пропускать подтверждение
+                    else if ((mode == KipPosProcessMode.AutoLoadData || mode == KipPosProcessMode.AutoLoadAndHighlight) &&
+                             (string.IsNullOrEmpty(objPos) || objPos == "INST" || objPos == "POS"))
+                    {
+                        // Добавляем объект в список выбранных без подтверждения
+                        selectedObjectsID.Add(objId);
+                    }
+                }
+
+                // Если режим включает подсветку (HighlightOnly или AutoLoadAndHighlight)
+                if (mode == KipPosProcessMode.HighlightOnly || mode == KipPosProcessMode.AutoLoadAndHighlight)
+                {
+                    // Получаем DataGridRow для текущего элемента
+                    var dataGridRow = dataGrid.ItemContainerGenerator.ContainerFromItem(row) as DataGridRow;
+                    if (dataGridRow == null) continue;
+
+                    // Находим ячейку с атрибутом "pos"
+                    var posColumn = dataGrid.Columns
+                        .OfType<DataGridTextColumn>()
+                        .FirstOrDefault(col => (col.Binding as Binding)?.Path.Path == "Attributes[pos]");
+
+                    if (posColumn != null)
+                    {
+                        var cellContent = posColumn.GetCellContent(dataGridRow);
+                        if (cellContent is TextBlock textBlock)
+                        {
+                            // Устанавливаем цвет текста в зависимости от результата поиска
+                            textBlock.Foreground = isFound ? Brushes.Green : Brushes.Red;
+                        }
+                    }
+                }
+            }
+
+            // Если режим включает автозагрузку (AutoLoadData или AutoLoadAndHighlight)
+            if ((mode == KipPosProcessMode.AutoLoadData || mode == KipPosProcessMode.AutoLoadAndHighlight) && selectedObjectsID.Count > 0)
+            {
+                DataGridToObjects.ProcessDataGridToObjects(dataGrid, selectedObjectsID.ToArray());
+            }
+        }
+
 
         /// <summary>
         /// Метод ищет по имени все обьекты в чертеже (маркеры, параметрику, таблицы) 

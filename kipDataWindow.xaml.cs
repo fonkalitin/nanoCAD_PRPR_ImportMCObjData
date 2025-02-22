@@ -9,6 +9,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Text;
 using System.IO;
+using static InternalEnums.KipPosProcessMode;
 
 
 
@@ -258,21 +259,23 @@ namespace PRPR_ImportMCObjData
 
         private void AutoLoadDataToObjBtn_Click(object sender, RoutedEventArgs e)
         {
-            LoadDataToKipObjects.AutoLoadDataToKipObjects(dataGrid, 
-                parObjCommonName: "КИПиА", 
-                onlyCheckPos: false
-                );
-
+            //KipPosProcessor.AutoLoadDataToKipObjects(dataGrid, 
+            //parObjCommonName: "КИПиА", 
+            //onlyCheckPos: false
+            //);
+            KipPosProcessor.KipPosTotalAgregator(dataGrid, "КИПиА", AutoLoadAndHighlight);
             HostMgd.EditorInput.Editor ed = Tools.CadCommand.getActiveDocEditor();
             ed.Command("REGENALL");
         }
 
         private void CheckDataBtn_Click(object sender, RoutedEventArgs e)
         {
-            LoadDataToKipObjects.AutoLoadDataToKipObjects(dataGrid, 
-                parObjCommonName: "КИПиА", 
-                onlyCheckPos: true
-                );
+            //KipPosProcessor.AutoLoadDataToKipObjects(dataGrid, 
+            //parObjCommonName: "КИПиА", 
+            //onlyCheckPos: true
+            //);
+
+            KipPosProcessor.KipPosTotalAgregator(dataGrid, "КИПиА", HighlightOnly);
         }
     }
 }

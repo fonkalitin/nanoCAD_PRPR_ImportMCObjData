@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:PRPR_ImportMCObjData"
         mc:Ignorable="d"
         Title="Таблица технологических параметров КИПиА" Height="750" Width="1050">
-    <Grid>
+    <Grid Margin="0,0,0,11">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="877*"/>
             <ColumnDefinition Width="123*"/>
@@ -49,8 +49,8 @@
                 <DropShadowEffect/>
             </Button.Effect>
         </Button>
-        <Border BorderBrush="Black" BorderThickness="1" HorizontalAlignment="Left" Height="81" Margin="428,633,0,0" VerticalAlignment="Top" Width="372"/>
-        <Border BorderBrush="Black" BorderThickness="1" HorizontalAlignment="Left" Height="81" Margin="189,633,0,0" VerticalAlignment="Top" Width="231"/>
+        <Border BorderBrush="Black" BorderThickness="1" HorizontalAlignment="Left" Height="80" Margin="428,633,0,0" VerticalAlignment="Top" Width="372"/>
+        <Border BorderBrush="Black" BorderThickness="1" HorizontalAlignment="Left" Height="80" Margin="189,633,0,0" VerticalAlignment="Top" Width="231"/>
 
     </Grid>
 </Window>
