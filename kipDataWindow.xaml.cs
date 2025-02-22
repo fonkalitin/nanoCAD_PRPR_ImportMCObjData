@@ -258,14 +258,21 @@ namespace PRPR_ImportMCObjData
 
         private void AutoLoadDataToObjBtn_Click(object sender, RoutedEventArgs e)
         {
-            LoadDataToKipObjects.AutoLoadDataToKipObjects(dataGrid);
+            LoadDataToKipObjects.AutoLoadDataToKipObjects(dataGrid, 
+                parObjCommonName: "КИПиА", 
+                onlyCheckPos: false
+                );
+
             HostMgd.EditorInput.Editor ed = Tools.CadCommand.getActiveDocEditor();
             ed.Command("REGENALL");
         }
 
         private void CheckDataBtn_Click(object sender, RoutedEventArgs e)
         {
-
+            LoadDataToKipObjects.AutoLoadDataToKipObjects(dataGrid, 
+                parObjCommonName: "КИПиА", 
+                onlyCheckPos: true
+                );
         }
     }
 }

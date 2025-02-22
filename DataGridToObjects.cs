@@ -53,9 +53,9 @@ namespace PRPR_ImportMCObjData
                     var column = dataGrid.Columns[iCol] as DataGridBoundColumn;
                     if (column == null) continue;
 
-                    // Извлекаем имя атрибута из биндинга
+                    
                     var bindingPath = (column.Binding as Binding)?.Path.Path;
-                    string attributeName = bindingPath.Replace("Attributes[", "").Replace("]", "");
+                    string attributeName = bindingPath.Replace("Attributes[", "").Replace("]", ""); // Извлекаем имя атрибута из биндинга
 
                     if (bindingPath == null) continue;
 
