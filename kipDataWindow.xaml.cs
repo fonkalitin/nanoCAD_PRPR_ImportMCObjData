@@ -262,5 +262,10 @@ namespace PRPR_ImportMCObjData
             HostMgd.EditorInput.Editor ed = Tools.CadCommand.getActiveDocEditor();
             ed.Command("REGENALL");
         }
+
+        private void CheckDataBtn_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
     }
 }

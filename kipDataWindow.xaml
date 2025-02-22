@@ -44,6 +44,13 @@
         <CheckBox x:Name="ExportHeaders" Content="Выводить заголовки столбцов" HorizontalAlignment="Left" Height="21" Margin="592,662,0,0" VerticalAlignment="Top" Width="208" Checked="ExportHeaders_Checked"/>
         <Button x:Name="LoadDataToObjBtn" Content="&lt;&lt;&lt; Загрузка в объекты чертежа" HorizontalAlignment="Left" Height="21" Margin="198,646,0,0" VerticalAlignment="Top" Width="204" Click="LoadDataToObjBtn_Click"/>
         <Button x:Name="AutoLoadDataToObjBtn" Content="Автозагрузка данных в КИП" HorizontalAlignment="Left" Height="22" Margin="198,675,0,0" VerticalAlignment="Top" Width="204" Click="AutoLoadDataToObjBtn_Click"/>
+        <Button x:Name="CheckDataBtn" Content="Проверить данные КИП" HorizontalAlignment="Left" Height="28" Margin="16,656,0,0" VerticalAlignment="Top" Width="160" Click="CheckDataBtn_Click">
+            <Button.Effect>
+                <DropShadowEffect/>
+            </Button.Effect>
+        </Button>
+        <Border BorderBrush="Black" BorderThickness="1" HorizontalAlignment="Left" Height="81" Margin="428,633,0,0" VerticalAlignment="Top" Width="372"/>
+        <Border BorderBrush="Black" BorderThickness="1" HorizontalAlignment="Left" Height="81" Margin="189,633,0,0" VerticalAlignment="Top" Width="231"/>
 
     </Grid>
 </Window>
