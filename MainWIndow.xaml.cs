@@ -52,7 +52,7 @@ namespace nanoCAD_PRPR_WPF
         {
             // Запись нового значения поля. Данные получены с выхода обработчика мультикад.
             // В качестве аргумента функции обработчику передано значение из первого поля формы WPF
-            getValBox.Text = Tools.CadCommand.PRPR_dataProc(setValBox.Text);
+            //getValBox.Text = Tools.CadCommand.PRPR_dataProc(setValBox.Text);
         }
 
         private void GetDwgDocsList_Click(object sender, RoutedEventArgs e)
@@ -253,5 +253,7 @@ namespace nanoCAD_PRPR_WPF
             KIPdataWindow.Show();
             
         }
+
+
     }
 }

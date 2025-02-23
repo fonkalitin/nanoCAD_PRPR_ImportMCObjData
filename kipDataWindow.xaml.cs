@@ -259,23 +259,16 @@ namespace PRPR_ImportMCObjData
 
         private void AutoLoadDataToObjBtn_Click(object sender, RoutedEventArgs e)
         {
-            //KipPosProcessor.AutoLoadDataToKipObjects(dataGrid, 
-            //parObjCommonName: "КИПиА", 
-            //onlyCheckPos: false
-            //);
-            KipPosProcessor.KipPosTotalAgregator(dataGrid, "КИПиА", AutoLoadAndHighlight);
+            KipPosProcessor.KipPosTotalAgregator(dataGrid, "КИПиА", AutoLoadData);
+            KipPosProcessor.KipPosTotalAgregator(dataGrid, "КИПиА", HighlightOnly);
             HostMgd.EditorInput.Editor ed = Tools.CadCommand.getActiveDocEditor();
             ed.Command("REGENALL");
         }
 
         private void CheckDataBtn_Click(object sender, RoutedEventArgs e)
         {
-            //KipPosProcessor.AutoLoadDataToKipObjects(dataGrid, 
-            //parObjCommonName: "КИПиА", 
-            //onlyCheckPos: true
-            //);
-
-            KipPosProcessor.KipPosTotalAgregator(dataGrid, "КИПиА", HighlightOnly);
+            KipPosProcessor.KipPosTotalAgregator(dataGrid, "КИПиА", HighlightOnly); // Вызов метода подсветки отсутствующих поз КИП
+            KipPosProcessor.CompareAndHighlightAttributes(dataGrid, "КИПиА"); // Вызов метода сравнения и подсветки отличающихся данных
         }
     }
 }

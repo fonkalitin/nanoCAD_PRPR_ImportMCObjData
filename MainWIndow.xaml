@@ -37,19 +37,7 @@
             <ColumnDefinition Width="346*"/>
             <ColumnDefinition Width="305*"/>
         </Grid.ColumnDefinitions>
-        <TextBox x:Name="setValBox" HorizontalAlignment="Left" Height="24" Margin="92,438,0,0" TextWrapping="Wrap" Text="введите значение" VerticalAlignment="Top" Width="130" Grid.Column="1"/>
-        <Button x:Name="myActionButton" Content="Передать данные, обработать их и вернуть результат" HorizontalAlignment="Left" Height="33" Margin="12,470,0,0" VerticalAlignment="Top" Width="329" Click="myActionButton_Click" Grid.ColumnSpan="2" RenderTransformOrigin="0.5,0.5" Grid.Column="1">
-            <Button.RenderTransform>
-                <TransformGroup>
-                    <ScaleTransform/>
-                    <SkewTransform AngleY="-0.642"/>
-                    <RotateTransform/>
-                    <TranslateTransform Y="-0.896"/>
-                </TransformGroup>
-            </Button.RenderTransform>
-        </Button>
-        <TextBox x:Name="getValBox" HorizontalAlignment="Left" Height="24" Margin="0,500,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="333" Grid.ColumnSpan="2" Grid.Column="1"/>
-        <ListBox x:Name="dwgDocsNameList" Grid.Column="3" HorizontalAlignment="Left" Height="310" Margin="37,91,0,0" VerticalAlignment="Top" Width="262" 
+        <ListBox x:Name="dwgDocsNameList" Grid.Column="3" HorizontalAlignment="Left" Height="310" Margin="0,76,0,0" VerticalAlignment="Top" Width="262" 
              SelectionChanged="dwgDocsNameList_SelectionChanged">
             <ListBox.ItemTemplate>
                 <DataTemplate>
@@ -58,17 +46,16 @@
             </ListBox.ItemTemplate>
         </ListBox>
 
-        <Button x:Name="GetDwgDocsList" Content="Обновить список открытых DWG" HorizontalAlignment="Left" Height="33" Margin="29,50,0,0" VerticalAlignment="Top" Width="263" Click="GetDwgDocsList_Click" RenderTransformOrigin="0.5,0.5" Grid.Column="3">
+        <Button x:Name="GetDwgDocsList" Content="Обновить список открытых DWG" HorizontalAlignment="Left" Height="20" Margin="0,51,0,0" VerticalAlignment="Top" Width="262" Click="GetDwgDocsList_Click" RenderTransformOrigin="0.5,0.5" Grid.Column="3">
             <Button.RenderTransform>
                 <TransformGroup>
                     <ScaleTransform/>
-                    <SkewTransform AngleY="-0.642"/>
-                    <RotateTransform/>
-                    <TranslateTransform Y="-0.896"/>
+                    <SkewTransform AngleY="0.0"/>
+                    <RotateTransform Angle="0.0"/>
+                    <TranslateTransform Y="0.0"/>
                 </TransformGroup>
             </Button.RenderTransform>
         </Button>
-        <Button x:Name="getPosData" Grid.Column="2" Content="Импортировать данные КИПиА" HorizontalAlignment="Left" Height="35" Margin="146,477,0,0" VerticalAlignment="Top" Width="190"/>
 
         <TreeView x:Name="treeView"  Margin="14,51,265,133" Grid.ColumnSpan="3" SelectedItemChanged="treeView_SelectedItemChanged">
             <TreeView.ItemTemplate>
@@ -81,7 +68,7 @@
         </TreeView>
 
         <Label Grid.Column="1" Content="Дерево технологии" HorizontalAlignment="Left" Height="28" Margin="59,23,0,0" VerticalAlignment="Top" Width="134"/>
-        <ListView x:Name="kipDataList" Grid.Column="2" HorizontalAlignment="Left" Height="133" Margin="106,91,0,0" VerticalAlignment="Top" Width="230" d:ItemsSource="{d:SampleData ItemCount=5}">
+        <ListView x:Name="kipDataList" Grid.Column="2" HorizontalAlignment="Left" Height="133" Margin="99,51,0,0" VerticalAlignment="Top" Width="230" d:ItemsSource="{d:SampleData ItemCount=5}">
             <ListView.View>
                 <GridView>
                     <GridViewColumn Header="Параметр" DisplayMemberBinding="{Binding Name}" />
@@ -89,7 +76,7 @@
                 </GridView>
             </ListView.View>
         </ListView>
-        <Button x:Name="ShowKipDataWin" Grid.Column="2" Content="Таблица параметров КИПиА" HorizontalAlignment="Left" Height="21" Margin="106,231,0,0" VerticalAlignment="Top" Width="230" Click="ShowKipDataWin_Click_1"/>
+        <Button x:Name="ShowKipDataWin" Grid.Column="2" Content="Таблица параметров КИПиА" HorizontalAlignment="Left" Height="21" Margin="99,189,0,0" VerticalAlignment="Top" Width="230" Click="ShowKipDataWin_Click_1"/>
 
     </Grid>
 </Window>
