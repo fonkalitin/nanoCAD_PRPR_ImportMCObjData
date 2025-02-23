@@ -253,7 +253,6 @@ namespace PRPR_ImportMCObjData
             McObjectId[] idsObjSelected = selectionHandler.GetSelectedIds();
 
             DataGridToObjects.ProcessDataGridToObjects(dataGrid, idsObjSelected);
-
             ed.Command("REGENALL");
         }
 
