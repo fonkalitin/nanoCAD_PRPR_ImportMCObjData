@@ -6,6 +6,7 @@ using System.Data;
 using System.Dynamic;
 using System.IO;
 using System.Linq;
+using System.Text;
 using System.Windows;
 using System.Windows.Controls;
 
@@ -104,7 +105,7 @@ public static class DataLoader
     {
         DataTable dataTable = new DataTable();
 
-        using (var reader = new StreamReader(filePath))
+        using (var reader = new StreamReader(filePath, Encoding.GetEncoding("windows-1251")))
         {
             // Пропускаем строку с отображаемыми именами
             reader.ReadLine();
@@ -124,7 +125,7 @@ public static class DataLoader
             // Читаем данные
             while (!reader.EndOfStream)
             {
-                string[] row = reader.ReadLine()?.Split(',');
+                string[] row = reader.ReadLine()?.Split(';');
                 if (row != null && row.Length == attributeNames.Length)
                 {
                     dataTable.Rows.Add(row);
