@@ -7,6 +7,7 @@ using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Input;
 using System.Windows.Media;
+using Microsoft.Win32;
 using System.Text;
 using System.IO;
 using static InternalEnums.KipPosProcessMode;
@@ -268,6 +269,37 @@ namespace PRPR_ImportMCObjData
         {
             KipPosProcessor.KipPosTotalAgregator(dataGrid, "КИПиА", HighlightOnly); // Вызов метода подсветки отсутствующих поз КИП
             KipPosProcessor.CompareAndHighlightAttributes(dataGrid, "КИПиА"); // Вызов метода сравнения и подсветки отличающихся данных
+        }
+
+        private void ImportFromFile_Click(object sender, RoutedEventArgs e)
+        {
+
+            try
+            {
+                // Создаем диалоговое окно для выбора файла
+                var openFileDialog = new OpenFileDialog
+                {
+                    Title = "Выберите файл данных",
+                    Filter = "CSV Files|*.csv|Excel Files|*.xlsx", // Фильтр для CSV и Excel
+                    Multiselect = false // Разрешить выбор только одного файла
+                };
+
+                // Показываем диалоговое окно
+                if (openFileDialog.ShowDialog() == true)
+                {
+                    // Получаем путь к выбранному файлу
+                    string filePath = openFileDialog.FileName;
+
+                    // Вызываем метод загрузки данных
+                    DataLoader.LoadDataToDataGrid(dataGrid, filePath, Path.Combine(dllFolder, "AttributeMappings.csv"));
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Ошибка при выборе файла: {ex.Message}", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+
+            
         }
     }
 }

@@ -39,18 +39,19 @@
         <Button x:Name="CheckNone" Content="Снять выбор" HorizontalAlignment="Left" Height="19" Margin="592,31,0,0" VerticalAlignment="Top" Width="98" Click="CheckNone_Click"/>
         <Button x:Name="CheckSelected" Content="Выбрать выделенные" HorizontalAlignment="Left" Height="19" Margin="698,31,0,0" VerticalAlignment="Top" Width="142" Click="CheckSelected_Click"/>
         <TextBlock x:Name="SelectedCount" HorizontalAlignment="Left" Height="19" Margin="377,31,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="51"/>
-        <Button x:Name="ExportToCsvBtn" Content="Экспорт в таблицу CSV" HorizontalAlignment="Left" Height="23" Margin="439,646,0,0" VerticalAlignment="Top" Width="143" Click="ExportToCsvBtn_Click"/>
-        <Button x:Name="ExportToXlsxBtn" Content="Экспорт в таблицу XLSX" HorizontalAlignment="Left" Height="23" Margin="439,674,0,0" VerticalAlignment="Top" Width="143" Click="ExportToXlsxBtn_Click"/>
-        <CheckBox x:Name="ExportHeaders" Content="Выводить заголовки столбцов" HorizontalAlignment="Left" Height="21" Margin="592,662,0,0" VerticalAlignment="Top" Width="208" Checked="ExportHeaders_Checked"/>
-        <Button x:Name="LoadDataToObjBtn" Content="&lt;&lt;&lt; Загрузка в объекты чертежа" HorizontalAlignment="Left" Height="21" Margin="198,646,0,0" VerticalAlignment="Top" Width="204" Click="LoadDataToObjBtn_Click"/>
-        <Button x:Name="AutoLoadDataToObjBtn" Content="Автозагрузка данных в КИП" HorizontalAlignment="Left" Height="22" Margin="198,675,0,0" VerticalAlignment="Top" Width="204" Click="AutoLoadDataToObjBtn_Click"/>
+        <Button x:Name="ExportToCsvBtn" Content="Экспорт в таблицу CSV" HorizontalAlignment="Left" Height="23" Margin="645,646,0,0" VerticalAlignment="Top" Width="143" Click="ExportToCsvBtn_Click"/>
+        <Button x:Name="ExportToXlsxBtn" Content="Экспорт в таблицу XLSX" HorizontalAlignment="Left" Height="23" Margin="645,674,0,0" VerticalAlignment="Top" Width="143" Click="ExportToXlsxBtn_Click"/>
+        <CheckBox x:Name="ExportHeaders" Content="Выводить заголовки столбцов" HorizontalAlignment="Left" Height="21" Margin="798,662,0,0" VerticalAlignment="Top" Width="208" Checked="ExportHeaders_Checked" Grid.ColumnSpan="2"/>
+        <Button x:Name="LoadDataToObjBtn" Content="&lt;&lt;&lt; Загрузка в объекты чертежа" HorizontalAlignment="Left" Height="21" Margin="404,646,0,0" VerticalAlignment="Top" Width="204" Click="LoadDataToObjBtn_Click"/>
+        <Button x:Name="AutoLoadDataToObjBtn" Content="Автозагрузка данных в КИП" HorizontalAlignment="Left" Height="22" Margin="404,675,0,0" VerticalAlignment="Top" Width="204" Click="AutoLoadDataToObjBtn_Click"/>
         <Button x:Name="CheckDataBtn" Content="Проверить данные КИП" HorizontalAlignment="Left" Height="28" Margin="16,656,0,0" VerticalAlignment="Top" Width="160" Click="CheckDataBtn_Click">
             <Button.Effect>
                 <DropShadowEffect/>
             </Button.Effect>
         </Button>
-        <Border BorderBrush="Black" BorderThickness="1" HorizontalAlignment="Left" Height="80" Margin="428,633,0,0" VerticalAlignment="Top" Width="372"/>
-        <Border BorderBrush="Black" BorderThickness="1" HorizontalAlignment="Left" Height="80" Margin="189,633,0,0" VerticalAlignment="Top" Width="231"/>
+        <Border BorderBrush="Black" BorderThickness="1" HorizontalAlignment="Left" Height="80" Margin="634,633,0,0" VerticalAlignment="Top" Width="372" Grid.ColumnSpan="2"/>
+        <Border BorderBrush="Black" BorderThickness="1" HorizontalAlignment="Left" Height="80" Margin="395,633,0,0" VerticalAlignment="Top" Width="231"/>
+        <Button x:Name="ImportFromFile" Content="&gt;&gt; Импорт из файла" HorizontalAlignment="Left" Height="30" Margin="210,656,0,0" VerticalAlignment="Top" Width="146" Click="ImportFromFile_Click"/>
 
     </Grid>
 </Window>
