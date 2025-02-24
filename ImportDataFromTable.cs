@@ -60,7 +60,7 @@ public static class DataLoader
     {
         var attributes = new List<string>();
 
-        using (var reader = new StreamReader(templatePath))
+        using (var reader = new StreamReader(templatePath, Encoding.GetEncoding("windows-1251")))
         {
             // Пропускаем строки до нужной
             for (int i = 1; i < lineNumber; i++)
