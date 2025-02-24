@@ -280,7 +280,7 @@ namespace PRPR_ImportMCObjData
                 var openFileDialog = new OpenFileDialog
                 {
                     Title = "Выберите файл данных",
-                    Filter = "CSV Files|*.csv|Excel Files|*.xlsx", // Фильтр для CSV и Excel
+                    Filter = "Excel Files|*.xlsx|CSV Files|*.csv", // Фильтр для CSV и Excel
                     Multiselect = false // Разрешить выбор только одного файла
                 };
 

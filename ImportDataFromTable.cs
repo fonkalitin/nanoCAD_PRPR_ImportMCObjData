@@ -9,6 +9,7 @@ using System.Linq;
 using System.Text;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Data;
 
 public static class DataLoader
 {
@@ -17,12 +18,13 @@ public static class DataLoader
         try
         {
             // Загрузка заголовков (первая строка)
-            List<string> headers = LoadAttributeTemplate(templatePath, lineNumber: 1);
+            List<string> headers = (List<string>)LoadCsvData(templatePath, mode: 1);
+
             // Загрузка имен атрибутов (вторая строка)
-            List<string> attributes = LoadAttributeTemplate(templatePath, lineNumber: 2);
+            List<string> attributes = (List<string>)LoadCsvData(templatePath, mode: 2);
 
             // Загрузка данных из файла
-            DataTable dataTable = LoadDataFile(filePath);
+            DataTable dataTable = LoadDataFile(filePath); //(DataTable)LoadCsvData(filePath, mode: 2);
 
             // Проверка структуры данных
             ValidateDataStructure(dataTable, attributes);
@@ -46,47 +48,22 @@ public static class DataLoader
     {
         dataGrid.Columns.Clear();
 
+        // Добавляем столбец с чекбоксами
+        dataGrid.Columns.Add(new DataGridCheckBoxColumn
+        {
+            Header = "Выбор",
+            Binding = new Binding("IsSelected")
+        });
+
+        // Добавляем остальные столбцы
         for (int i = 0; i < attributes.Count; i++)
         {
             dataGrid.Columns.Add(new DataGridTextColumn
             {
                 Header = headers[i], // Используем заголовок из первой строки
-                Binding = new System.Windows.Data.Binding(attributes[i]) // Используем имя атрибута из второй строки
+                Binding = new Binding(attributes[i]) // Используем имя атрибута из второй строки
             });
         }
-    }
-
-    private static List<string> LoadAttributeTemplate(string templatePath, int lineNumber = 1)
-    {
-        var attributes = new List<string>();
-
-        using (var reader = new StreamReader(templatePath, Encoding.GetEncoding("windows-1251")))
-        {
-            // Пропускаем строки до нужной
-            for (int i = 1; i < lineNumber; i++)
-            {
-                reader.ReadLine();
-            }
-
-            // Читаем нужную строку
-            string[] values = reader.ReadLine()?.Split(';');
-
-            if (values == null || values.Length < 2)
-                throw new InvalidDataException("Неверный формат шаблона.");
-
-            // Первый столбец в шаблоне пустой, собираем со второго
-            for (int i = 1; i < values.Length; i++)
-            {
-                string attr = values[i].Trim();
-                if (!string.IsNullOrEmpty(attr))
-                    attributes.Add(attr);
-            }
-        }
-
-        if (attributes.Count == 0)
-            throw new InvalidDataException("Шаблон не содержит атрибутов.");
-
-        return attributes;
     }
 
     private static DataTable LoadDataFile(string filePath)
@@ -134,6 +111,58 @@ public static class DataLoader
         }
 
         return dataTable;
+    }
+
+    private static object LoadCsvData(string filePath, int mode = 0)
+    {
+        using (var reader = new StreamReader(filePath, Encoding.GetEncoding("windows-1251")))
+        {
+            // Читаем первую строку (заголовки)
+            string[] headers = reader.ReadLine()?.Split(';');
+
+            if (headers == null || headers.Length == 0)
+                throw new InvalidDataException("Файл данных поврежден.");
+
+            // Если mode = 1, возвращаем заголовки (со второго столбца)
+            if (mode == 1)
+            {
+                return headers.Skip(1).Select(h => h.Trim()).ToList();
+            }
+
+            // Читаем вторую строку (имена атрибутов)
+            string[] attributeNames = reader.ReadLine()?.Split(';');
+
+            if (attributeNames == null || attributeNames.Length == 0)
+                throw new InvalidDataException("Файл данных поврежден.");
+
+            // Если mode = 2, возвращаем имена атрибутов (со второго столбца)
+            if (mode == 2)
+            {
+                return attributeNames.Skip(1).Select(a => a.Trim()).ToList();
+            }
+
+            // Если mode = 0, возвращаем все данные (начиная с третьей строки)
+            DataTable dataTable = new DataTable();
+
+            // Создаем столбцы (со второго столбца)
+            foreach (string name in attributeNames.Skip(1))
+            {
+                dataTable.Columns.Add(name.Trim());
+            }
+
+            // Читаем данные (начиная с третьей строки)
+            while (!reader.EndOfStream)
+            {
+                string[] row = reader.ReadLine()?.Split(';');
+                if (row != null && row.Length == attributeNames.Length)
+                {
+                    // Пропускаем первый столбец
+                    dataTable.Rows.Add(row.Skip(1).ToArray());
+                }
+            }
+
+            return dataTable;
+        }
     }
 
     private static DataTable LoadXlsx(string filePath)
@@ -210,6 +239,10 @@ public static class DataLoader
             dynamic obj = new ExpandoObject();
             var dict = (IDictionary<string, object>)obj;
 
+            // Добавляем свойство IsSelected
+            dict["IsSelected"] = false; // По умолчанию чекбокс не выбран
+
+            // Заполняем остальные свойства
             foreach (var attribute in attributes)
             {
                 if (row.Table.Columns.Contains(attribute))
