@@ -102,7 +102,6 @@ namespace Tools
 
 
 
-
         /// <summary>
         /// Активатор открытого документа по его имени
         /// </summary>
@@ -112,40 +111,7 @@ namespace Tools
             doc.Activate(); // Активация документа
         }
 
-        /// <summary>
-        /// Возвращает эдитор активного документа
-        /// </summary>
-        public static Ed.Editor getActiveDocEditor()
-        {
-        App.Document doc = App.Application.DocumentManager.MdiActiveDocument;
-        Ed.Editor ed = doc.Editor;
-            return ed;
-        }
-
-        /// <summary>
-        /// Возвращает активный документ
-        /// </summary>
-        public static App.Document getActiveDoc()
-        {
-            App.Document doc = App.Application.DocumentManager.MdiActiveDocument;
-            return doc;
-        }
-
-
-        public static string getActiveDocPath()
-        {
-            App.Document doc = App.Application.DocumentManager.MdiActiveDocument;
-
-            // ---- Имена и пути оригинального dwg-файла (открытого)
-            string dwgName = doc.Name; // метод получения полного пути и имени текущего dwg-файла (db.Filename; // Альтернативный метод)
-            string dwgFileDirPath = Path.GetDirectoryName(dwgName); // Путь до каталога dwg файла (без имени файла) 
-            string dwgFileName = Path.GetFileName(dwgName); // Только имя самого dwg файла с расширением
-            string dwgFileNameNoExt = Path.GetFileNameWithoutExtension(dwgFileName); // Только имя самого dwg файла без расширения
-
-            return dwgFileDirPath;
-        }
-
-public static class ActiveDocumentHelper
+    public static class ActiveDocumentHelper
     {
         /// <summary>
         /// Тип информации о пути к файлу
