@@ -9,6 +9,8 @@ using nanoCAD_PRPR_WPF;
 using System.Windows;
 using Multicad.DatabaseServices;
 using PRPR_METHODS;
+using System.Windows.Controls;
+using System.IO;
 
 
 [assembly: Rtm.CommandClass(typeof(Tools.CadCommand))]
@@ -113,12 +115,89 @@ namespace Tools
         /// <summary>
         /// Возвращает эдитор активного документа
         /// </summary>
-        public static Ed.Editor getActiveDocEditor(){
+        public static Ed.Editor getActiveDocEditor()
+        {
         App.Document doc = App.Application.DocumentManager.MdiActiveDocument;
         Ed.Editor ed = doc.Editor;
             return ed;
         }
+
+        /// <summary>
+        /// Возвращает активный документ
+        /// </summary>
+        public static App.Document getActiveDoc()
+        {
+            App.Document doc = App.Application.DocumentManager.MdiActiveDocument;
+            return doc;
+        }
+
+
+        public static string getActiveDocPath()
+        {
+            App.Document doc = App.Application.DocumentManager.MdiActiveDocument;
+
+            // ---- Имена и пути оригинального dwg-файла (открытого)
+            string dwgName = doc.Name; // метод получения полного пути и имени текущего dwg-файла (db.Filename; // Альтернативный метод)
+            string dwgFileDirPath = Path.GetDirectoryName(dwgName); // Путь до каталога dwg файла (без имени файла) 
+            string dwgFileName = Path.GetFileName(dwgName); // Только имя самого dwg файла с расширением
+            string dwgFileNameNoExt = Path.GetFileNameWithoutExtension(dwgFileName); // Только имя самого dwg файла без расширения
+
+            return dwgFileDirPath;
+        }
+
+public static class ActiveDocumentHelper
+    {
+        /// <summary>
+        /// Тип информации о пути к файлу
+        /// </summary>
+        public enum PathInfoType
+        {
+            FullPath,          // Полный путь с именем файла и расширением
+            DirectoryPath,     // Путь к каталогу
+            FileNameWithExt,   // Имя файла с расширением
+            FileNameWithoutExt // Имя файла без расширения
+        }
+
+        /// <summary>
+        /// Возвращает активный документ
+        /// </summary>
+        public static App.Document GetActiveDocument()
+        {
+            return App.Application.DocumentManager.MdiActiveDocument;
+        }
+
+        /// <summary>
+        /// Возвращает редактор активного документа
+        /// </summary>
+        public static Ed.Editor GetActiveDocumentEditor()
+        {
+            App.Document doc = GetActiveDocument();
+            return doc?.Editor; // Проверка на null
+        }
+
+        /// <summary>
+        /// Возвращает информацию о пути к активному документу в зависимости от выбранного типа
+        /// </summary>
+        public static string GetActiveDocumentPathInfo(PathInfoType infoType)
+        {
+            App.Document doc = GetActiveDocument();
+            if (doc == null) return string.Empty;
+
+            string fullPath = doc.Name;
+
+            return infoType switch
+            {
+                PathInfoType.DirectoryPath => Path.GetDirectoryName(fullPath),
+                PathInfoType.FileNameWithExt => Path.GetFileName(fullPath),
+                PathInfoType.FileNameWithoutExt => Path.GetFileNameWithoutExtension(fullPath),
+                PathInfoType.FullPath => fullPath,
+                _ => string.Empty
+            };
+        }
     }
+
+
+}
 }
 
 

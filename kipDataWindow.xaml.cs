@@ -1,5 +1,9 @@
 ﻿using DocumentFormat.OpenXml.Bibliography;
 using Multicad;
+using App = HostMgd.ApplicationServices;
+using Db = Teigha.DatabaseServices;
+using Ed = HostMgd.EditorInput;
+using Rtm = Teigha.Runtime;
 using System.Collections.ObjectModel;
 using System.Reflection;
 using System.Windows;
@@ -11,6 +15,7 @@ using Microsoft.Win32;
 using System.Text;
 using System.IO;
 using static InternalEnums.KipPosProcessMode;
+using static Tools.CadCommand.ActiveDocumentHelper;
 
 
 
@@ -28,8 +33,9 @@ namespace PRPR_ImportMCObjData
 
         // Получение фактического пути расположения данной сборки dll
         public string dllFolder = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+        public string ActiveDocPath = GetActiveDocumentPathInfo(PathInfoType.DirectoryPath);
 
-        
+
         public KIPdataWindow()
         {
             InitializeComponent();
@@ -231,13 +237,15 @@ namespace PRPR_ImportMCObjData
 
         private void ExportToCsvBtn_Click(object sender, RoutedEventArgs e)
         {
-            ExportToCSV.ExportToCsv(dataGrid, ExportHeaders.IsChecked.Value, "C:\\tmp\\KIPdata.csv");
+            string CSVexportDataFileName = GetActiveDocumentPathInfo(PathInfoType.FileNameWithoutExt)+"_ExportData.csv";
+            ExportToCSV.ExportToCsv(dataGrid, ExportHeaders.IsChecked.Value, Path.Combine(ActiveDocPath, CSVexportDataFileName));
             //ExportDataGridToFile.ExportToCsv(dataGrid, ExportHeaders.IsChecked.Value, "C:\\tmp\\KIPdata.csv");
         }
 
         private void ExportToXlsxBtn_Click(object sender, RoutedEventArgs e)
         {
-            ExportToXLSX.ExportToXlsx(dataGrid, ExportHeaders.IsChecked.Value, "C:\\tmp\\KIPdata.xlsx");
+            string XLSXexportDataFileName = GetActiveDocumentPathInfo(PathInfoType.FileNameWithoutExt) + "_ExportData.xlsx";
+            ExportToXLSX.ExportToXlsx(dataGrid, ExportHeaders.IsChecked.Value, Path.Combine(ActiveDocPath, XLSXexportDataFileName));
             //ExportDataGridToFile.ExportToXlsx(dataGrid, ExportHeaders.IsChecked.Value, "C:\\tmp\\KIPdata.csv");
         }
 
@@ -249,8 +257,8 @@ namespace PRPR_ImportMCObjData
         private void LoadDataToObjBtn_Click(object sender, RoutedEventArgs e)
         {
 
-            HostMgd.EditorInput.Editor ed = Tools.CadCommand.getActiveDocEditor();
-            IDsCollector selectionHandler = new IDsCollector(Tools.CadCommand.getActiveDocEditor(), "Выберите объекты на чертеже для загрузки в них данных");
+            HostMgd.EditorInput.Editor ed = GetActiveDocumentEditor();
+            IDsCollector selectionHandler = new IDsCollector(GetActiveDocumentEditor(), "Выберите объекты на чертеже для загрузки в них данных");
             McObjectId[] idsObjSelected = selectionHandler.GetSelectedIds();
 
             DataGridToObjects.ProcessDataGridToObjects(dataGrid, idsObjSelected);
@@ -261,7 +269,7 @@ namespace PRPR_ImportMCObjData
         {
             KipPosProcessor.KipPosTotalAgregator(dataGrid, "КИПиА", AutoLoadData);
             KipPosProcessor.KipPosTotalAgregator(dataGrid, "КИПиА", HighlightOnly);
-            HostMgd.EditorInput.Editor ed = Tools.CadCommand.getActiveDocEditor();
+            HostMgd.EditorInput.Editor ed = GetActiveDocumentEditor();
             ed.Command("REGENALL");
         }
 
