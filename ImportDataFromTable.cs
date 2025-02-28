@@ -10,6 +10,7 @@ using System.Text;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
+using static PRPR_ImportMCObjData.KIPdataWindow;
 
 public static class DataLoader
 {
@@ -25,6 +26,8 @@ public static class DataLoader
 
             // Загрузка данных из файла
             DataTable dataTable = LoadDataFile(filePath); //(DataTable)LoadCsvData(filePath, mode: 2);
+
+
 
             // Проверка структуры данных
             ValidateDataStructure(dataTable, attributes);
@@ -43,6 +46,10 @@ public static class DataLoader
             MessageBox.Show($"Ошибка загрузки данных: {ex.Message}");
         }
     }
+
+    
+
+
 
     private static void UpdateDataGridColumns(DataGrid dataGrid, List<string> headers, List<string> attributes)
     {
@@ -66,7 +73,7 @@ public static class DataLoader
         }
     }
 
-    private static DataTable LoadDataFile(string filePath)
+    public static DataTable LoadDataFile(string filePath)
     {
         string extension = Path.GetExtension(filePath).ToLower();
 

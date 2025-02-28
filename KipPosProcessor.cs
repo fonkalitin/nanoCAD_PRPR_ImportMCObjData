@@ -23,7 +23,7 @@ namespace PRPR_ImportMCObjData
         /// Метод выполняет автоматическую загрузку значений всех атрибутов в обьекты с позициями pos 
         /// соответствующими таблице dataGrid. Либо выполняет только проверку на наличие позиций в чертеже
         /// </summary>
-        public static void KipPosTotalAgregator(DataGrid dataGrid, string parObjCommonName = "КИПиА", KipPosProcessMode mode = AutoLoadAndHighlight)
+        public static void KipPosTotalAgregator(DataGrid dataGrid, string parObjCommonName = "КИП", KipPosProcessMode mode = AutoLoadAndHighlight)
         {
             // Получаем все объекты с атрибутом pos
             List<string> attributesList = new List<string> { "pos" };

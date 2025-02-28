@@ -16,6 +16,7 @@ using System.Text;
 using System.IO;
 using static InternalEnums.KipPosProcessMode;
 using static Tools.CadCommand.ActiveDocumentHelper;
+using System.Data;
 
 
 
@@ -44,7 +45,7 @@ namespace PRPR_ImportMCObjData
         {
             InitializeComponent();
             Parameters = new ObservableCollection<ParameterData>();
-            PopulateDataGrid();
+            PopulateDataGrid2(1);
 
         }
 
@@ -133,7 +134,7 @@ namespace PRPR_ImportMCObjData
             // Проверяем, что данные получены
             if (data == null || data.Count == 0)
             {
-                MessageBox.Show("Нет данных для отображения");
+                //MessageBox.Show("Нет данных для отображения");
                 return;
             }
 
@@ -157,6 +158,138 @@ namespace PRPR_ImportMCObjData
 
             // Создаем динамические столбцы
             CreateDynamicColumns(mappings);
+        }
+
+
+
+
+
+        private void PopulateDataGrid2(int mode, string filePath = null)
+        {
+            List<List<dynamic>> data = null;
+            List<string> mappings = null;
+
+            // Режим 1: Используем PRPR_METHODS.CollectParObjData
+            if (mode == 1)
+            {
+                // Загружаем настройки из CSV
+                var (objectName, loadedMappings) = LoadSettingsFromCsv();
+
+                // Проверяем, что настройки загружены
+                if (string.IsNullOrEmpty(objectName) || loadedMappings.Count == 0)
+                {
+                    MessageBox.Show("Ошибка загрузки настроек");
+                    return;
+                }
+
+                // Сохраняем mappings для дальнейшего использования
+                mappings = loadedMappings.Select(m => m.AttributeName).ToList();
+
+                // Получаем данные через метод
+                List<List<ExValue>> rawData = PRPR_METHODS.PRPR_METHODS.CollectParObjData(objectName, mappings, 0);
+
+                // Преобразуем List<List<ExValue>> в List<List<dynamic>>
+                data = new List<List<dynamic>>();
+                foreach (var row in rawData)
+                {
+                    var rowData = new List<dynamic>();
+                    foreach (var exValue in row)
+                    {
+                        rowData.Add(exValue.Value); // Предполагаем, что ExValue имеет свойство Value
+                    }
+                    data.Add(rowData);
+                }
+            }
+            // Режим 2: Используем LoadDataFile
+            else if (mode == 2)
+            {
+                if (string.IsNullOrEmpty(filePath))
+                {
+                    MessageBox.Show("Не указан путь к файлу для режима 2");
+                    return;
+                }
+
+                // Загружаем данные из файла
+                DataTable dataTable = DataLoader.LoadDataFile(filePath);
+
+                // Преобразуем DataTable в список списков динамических объектов
+                data = new List<List<dynamic>>();
+                foreach (DataRow row in dataTable.Rows)
+                {
+                    var rowData = new List<dynamic>();
+                    foreach (DataColumn column in dataTable.Columns)
+                    {
+                        rowData.Add(row[column]);
+                    }
+                    data.Add(rowData);
+                }
+
+                // Если mappings не заданы, создаем их на основе столбцов DataTable
+                if (mappings == null)
+                {
+                    mappings = new List<string>();
+                    foreach (DataColumn column in dataTable.Columns)
+                    {
+                        mappings.Add(column.ColumnName);
+                    }
+                }
+            }
+            else
+            {
+                MessageBox.Show("Неверный режим работы");
+                return;
+            }
+
+            // Проверяем, что данные получены
+            if (data == null || data.Count == 0)
+            {
+                //MessageBox.Show("Нет данных для отображения");
+                return;
+            }
+
+            // Очищаем коллекцию Parameters перед наполнением
+            Parameters.Clear();
+
+            // Наполняем коллекцию Parameters
+            foreach (var attributeValues in data)
+            {
+                var parameterData = new ParameterData();
+
+                // Заполняем значения атрибутов
+                for (int i = 0; i < attributeValues.Count; i++)
+                {
+                    string attributeName = mappings != null && i < mappings.Count ? mappings[i] : $"Attribute{i}";
+                    parameterData.Attributes[attributeName] = attributeValues[i]?.ToString() ?? string.Empty;
+                }
+
+                Parameters.Add(parameterData);
+            }
+
+            // Устанавливаем источник данных для DataGrid
+            dataGrid.ItemsSource = Parameters;
+
+            // Создаем динамические столбцы
+            if (mappings != null)
+            {
+                // Преобразуем список строк в список AttributeMapping
+                var attributeMappings = ConvertToAttributeMappings(mappings);
+                CreateDynamicColumns(attributeMappings);
+            }
+        }
+
+
+        private List<AttributeMapping> ConvertToAttributeMappings(List<string> attributeNames)
+        {
+            var mappings = new List<AttributeMapping>();
+            foreach (var attributeName in attributeNames)
+            {
+                mappings.Add(new AttributeMapping
+                {
+                    AttributeName = attributeName,
+                    DisplayName = attributeName // Используем имя атрибута как отображаемое имя
+                });
+            }
+            return mappings;
         }
 
         /// <summary>
@@ -304,7 +437,11 @@ namespace PRPR_ImportMCObjData
                     string filePath = openFileDialog.FileName;
 
                     // Вызываем метод загрузки данных
-                    DataLoader.LoadDataToDataGrid(dataGrid, filePath, AttributeMappingsFilePath);
+                    //DataLoader.LoadDataToDataGrid(dataGrid, filePath, AttributeMappingsFilePath);
+
+                    PopulateDataGrid2(2, filePath);
+
+
                 }
             }
             catch (Exception ex)
