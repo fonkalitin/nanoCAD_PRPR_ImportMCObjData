@@ -113,7 +113,7 @@ public static class DataLoader
         return dataTable;
     }
 
-    private static object LoadCsvData(string filePath, int mode = 0)
+    public static object LoadCsvData(string filePath, int mode = 0)
     {
         using (var reader = new StreamReader(filePath, Encoding.GetEncoding("windows-1251")))
         {
@@ -141,7 +141,18 @@ public static class DataLoader
                 return attributeNames.Skip(1).Select(a => a.Trim()).ToList();
             }
 
-            // Если mode = 0, возвращаем все данные (начиная с третьей строки)
+            // Если mode = 3, возвращаем значение из второй строки первого столбца (ячейка A2)
+            if (mode == 3)
+            {
+                // Вторая строка уже прочитана (это attributeNames), поэтому возвращаем первый элемент
+                if (attributeNames.Length > 0)
+                {
+                    return attributeNames[0].Trim();
+                }
+                throw new InvalidDataException("Файл данных поврежден или не содержит данных.");
+            }
+
+            // Если mode = 0, возвращаем всю таблицу целиком
             DataTable dataTable = new DataTable();
 
             // Создаем столбцы (со второго столбца)

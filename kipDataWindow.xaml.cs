@@ -32,8 +32,12 @@ namespace PRPR_ImportMCObjData
         public ObservableCollection<ParameterData> Parameters { get; set; }
 
         // Получение фактического пути расположения данной сборки dll
-        public string dllFolder = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
-        public string ActiveDocPath = GetActiveDocumentPathInfo(PathInfoType.DirectoryPath);
+        public static string dllFolder = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+        public static string ActiveDocPath = GetActiveDocumentPathInfo(PathInfoType.DirectoryPath);
+        public static string AttributeMappingsFileName = "AttributeMappings.csv";
+        public static string AttributeMappingsFilePath = Path.Combine(dllFolder, AttributeMappingsFileName);
+        // Имя обьекта в чертеже куда загружать данные (КИП в АТХ)
+        public static string KipObjectName = (string)DataLoader.LoadCsvData(AttributeMappingsFilePath, mode: 3);
 
 
         public KIPdataWindow()
@@ -267,16 +271,17 @@ namespace PRPR_ImportMCObjData
 
         private void AutoLoadDataToObjBtn_Click(object sender, RoutedEventArgs e)
         {
-            KipPosProcessor.KipPosTotalAgregator(dataGrid, "КИПиА", AutoLoadData);
-            KipPosProcessor.KipPosTotalAgregator(dataGrid, "КИПиА", HighlightOnly);
+
+            KipPosProcessor.KipPosTotalAgregator(dataGrid, KipObjectName, AutoLoadData);
+            KipPosProcessor.KipPosTotalAgregator(dataGrid, KipObjectName, HighlightOnly);
             HostMgd.EditorInput.Editor ed = GetActiveDocumentEditor();
             ed.Command("REGENALL");
         }
 
         private void CheckDataBtn_Click(object sender, RoutedEventArgs e)
         {
-            KipPosProcessor.KipPosTotalAgregator(dataGrid, "КИПиА", HighlightOnly); // Вызов метода подсветки отсутствующих поз КИП
-            KipPosProcessor.CompareAndHighlightAttributes(dataGrid, "КИПиА"); // Вызов метода сравнения и подсветки отличающихся данных
+            KipPosProcessor.KipPosTotalAgregator(dataGrid, KipObjectName, HighlightOnly); // Вызов метода подсветки отсутствующих поз КИП
+            KipPosProcessor.CompareAndHighlightAttributes(dataGrid, KipObjectName); // Вызов метода сравнения и подсветки отличающихся данных
         }
 
         private void ImportFromFile_Click(object sender, RoutedEventArgs e)
@@ -299,7 +304,7 @@ namespace PRPR_ImportMCObjData
                     string filePath = openFileDialog.FileName;
 
                     // Вызываем метод загрузки данных
-                    DataLoader.LoadDataToDataGrid(dataGrid, filePath, Path.Combine(dllFolder, "AttributeMappings.csv"));
+                    DataLoader.LoadDataToDataGrid(dataGrid, filePath, AttributeMappingsFilePath);
                 }
             }
             catch (Exception ex)
