@@ -78,92 +78,120 @@ namespace Tools
         }
 
 
-        public static List<string> GetDwgDocsList()
+
+        /// <summary>
+        /// Вспомогательный класс для работы с активным документом и списком открытых документов в AutoCAD.
+        /// </summary>
+        public static class ActiveDocumentHelper
         {
-            //string fileName = "C:\\temp\\cource.dwg";
-            // Открытие документа с указанным именем файла
-            //App.Document courceDwg = App.Application.DocumentManager.Open(fileName, true);
-
-            // Получение списка документов
-            List<McDocument> dwgDocsList = McDocumentsManager.GetDocuments();
-
-            // Создание списка для имен документов
-            List<string> dwgDocsNameList = new List<string>();
-
-            // Итерация по списку документов и добавление имен в dwgDocsNameList
-            foreach (McDocument dwgDoc in dwgDocsList)
+            /// <summary>
+            /// Тип информации о пути к файлу.
+            /// </summary>
+            public enum PathInfoType
             {
-                dwgDocsNameList.Add(dwgDoc.Name);
+                /// <summary>
+                /// Полный путь с именем файла и расширением.
+                /// </summary>
+                FullPath,
+
+                /// <summary>
+                /// Путь к каталогу, в котором находится файл.
+                /// </summary>
+                DirectoryPath,
+
+                /// <summary>
+                /// Имя файла с расширением.
+                /// </summary>
+                FileNameWithExt,
+
+                /// <summary>
+                /// Имя файла без расширения.
+                /// </summary>
+                FileNameWithoutExt
             }
 
-            // Возврат списка имен документов
-            return dwgDocsNameList;
-        }
-
-
-
-        /// <summary>
-        /// Активатор открытого документа по его имени
-        /// </summary>
-        public static void activateDwgDocByName(string dwgDocName)
-        {
-            McDocument doc = McDocument.GetDocument(dwgDocName); // Получение документа по его имени
-            doc.Activate(); // Активация документа
-        }
-
-    public static class ActiveDocumentHelper
-    {
-        /// <summary>
-        /// Тип информации о пути к файлу
-        /// </summary>
-        public enum PathInfoType
-        {
-            FullPath,          // Полный путь с именем файла и расширением
-            DirectoryPath,     // Путь к каталогу
-            FileNameWithExt,   // Имя файла с расширением
-            FileNameWithoutExt // Имя файла без расширения
-        }
-
-        /// <summary>
-        /// Возвращает активный документ
-        /// </summary>
-        public static App.Document GetActiveDocument()
-        {
-            return App.Application.DocumentManager.MdiActiveDocument;
-        }
-
-        /// <summary>
-        /// Возвращает редактор активного документа
-        /// </summary>
-        public static Ed.Editor GetActiveDocumentEditor()
-        {
-            App.Document doc = GetActiveDocument();
-            return doc?.Editor; // Проверка на null
-        }
-
-        /// <summary>
-        /// Возвращает информацию о пути к активному документу в зависимости от выбранного типа
-        /// </summary>
-        public static string GetActiveDocumentPathInfo(PathInfoType infoType)
-        {
-            App.Document doc = GetActiveDocument();
-            if (doc == null) return string.Empty;
-
-            string fullPath = doc.Name;
-
-            return infoType switch
+            /// <summary>
+            /// Возвращает активный документ.
+            /// </summary>
+            /// <returns>Активный документ или null, если активный документ отсутствует.</returns>
+            public static App.Document GetActiveDocument()
             {
-                PathInfoType.DirectoryPath => Path.GetDirectoryName(fullPath),
-                PathInfoType.FileNameWithExt => Path.GetFileName(fullPath),
-                PathInfoType.FileNameWithoutExt => Path.GetFileNameWithoutExtension(fullPath),
-                PathInfoType.FullPath => fullPath,
-                _ => string.Empty
-            };
+                return App.Application.DocumentManager.MdiActiveDocument;
+            }
+
+            /// <summary>
+            /// Возвращает редактор активного документа.
+            /// </summary>
+            /// <returns>Редактор активного документа или null, если активный документ отсутствует.</returns>
+            public static Ed.Editor GetActiveDocumentEditor()
+            {
+                App.Document doc = GetActiveDocument();
+                return doc?.Editor; // Проверка на null
+            }
+
+            /// <summary>
+            /// Возвращает информацию о пути к активному документу в зависимости от выбранного типа.
+            /// </summary>
+            /// <param name="infoType">Тип информации о пути (полный путь, путь к каталогу, имя файла и т.д.).</param>
+            /// <returns>Строка с запрошенной информацией о пути или пустая строка, если активный документ отсутствует.</returns>
+            public static string GetActiveDocumentPathInfo(PathInfoType infoType)
+            {
+                App.Document doc = GetActiveDocument();
+                if (doc == null) return string.Empty;
+
+                string fullPath = doc.Name;
+
+                return infoType switch
+                {
+                    PathInfoType.DirectoryPath => Path.GetDirectoryName(fullPath),
+                    PathInfoType.FileNameWithExt => Path.GetFileName(fullPath),
+                    PathInfoType.FileNameWithoutExt => Path.GetFileNameWithoutExtension(fullPath),
+                    PathInfoType.FullPath => fullPath,
+                    _ => string.Empty
+                };
+            }
+
+            /// <summary>
+            /// Возвращает список имен всех открытых документов.
+            /// </summary>
+            /// <returns>Список имен открытых документов.</returns>
+            public static List<string> GetDwgDocsList()
+            {
+                // Получение списка документов
+                List<McDocument> dwgDocsList = McDocumentsManager.GetDocuments();
+
+                // Создание списка для имен документов
+                List<string> dwgDocsNameList = new List<string>();
+
+                // Итерация по списку документов и добавление имен в dwgDocsNameList
+                foreach (McDocument dwgDoc in dwgDocsList)
+                {
+                    dwgDocsNameList.Add(dwgDoc.Name);
+                }
+
+                // Возврат списка имен документов
+                return dwgDocsNameList;
+            }
+
+            /// <summary>
+            /// Активирует открытый документ по его имени.
+            /// </summary>
+            /// <param name="dwgDocName">Имя документа, который требуется активировать.</param>
+            /// <exception cref="ArgumentNullException">Выбрасывается, если имя документа равно null или пустой строке.</exception>
+            public static void ActivateDwgDocByName(string dwgDocName)
+            {
+                if (string.IsNullOrEmpty(dwgDocName))
+                {
+                    throw new ArgumentNullException(nameof(dwgDocName), "Имя документа не может быть null или пустой строкой.");
+                }
+
+                McDocument doc = McDocument.GetDocument(dwgDocName); // Получение документа по его имени
+                doc?.Activate(); // Активация документа (с проверкой на null)
+            }
         }
+
+
     }
-
-
-}
 }
 
 

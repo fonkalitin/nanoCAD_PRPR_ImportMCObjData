@@ -17,6 +17,7 @@ using PRPR_METHODS;
 using static Multicad.DatabaseServices.McDbObject;
 using System.Collections.ObjectModel;
 using PRPR_ImportMCObjData;
+using static Tools.CadCommand.ActiveDocumentHelper;
 
 namespace nanoCAD_PRPR_WPF
 {
@@ -66,7 +67,7 @@ namespace nanoCAD_PRPR_WPF
             {
                 string dwgDocName = selectedDoc.FileName;  // Получаем полный путь
                 string fullPath = selectedDoc.FullPath;  // Получаем полный путь
-                Tools.CadCommand.activateDwgDocByName(fullPath); //  работаем с полным путем файла
+                ActivateDwgDocByName(fullPath); //  работаем с полным путем файла
                 //treeView.ItemsSource = GetTreeData(); 
                 InitializeTreeView(dwgDocName); // Обновление содержимого дерева (подгрузка данных из выбранного чертежа)
             }
@@ -108,7 +109,7 @@ namespace nanoCAD_PRPR_WPF
         public static List<DwgDoc> GetDwgDocsFullNameList()
         {
             // Получаем список полных путей к файлам
-            List<string> fullPaths = Tools.CadCommand.GetDwgDocsList(); // метод получения полных имен DWG-файлов (с полным путем)
+            List<string> fullPaths = GetDwgDocsList(); // метод получения полных имен DWG-файлов (с полным путем)
 
             // Создаем список объектов DwgDoc
             List<DwgDoc> dwgDocsList = new List<DwgDoc>();
