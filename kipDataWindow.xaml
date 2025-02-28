@@ -52,6 +52,7 @@
         <Border BorderBrush="Black" BorderThickness="1" HorizontalAlignment="Left" Height="80" Margin="634,633,0,0" VerticalAlignment="Top" Width="372" Grid.ColumnSpan="2"/>
         <Border BorderBrush="Black" BorderThickness="1" HorizontalAlignment="Left" Height="80" Margin="395,633,0,0" VerticalAlignment="Top" Width="231"/>
         <Button x:Name="ImportFromFile" Content="&gt;&gt; Импорт из файла" HorizontalAlignment="Left" Height="30" Margin="210,656,0,0" VerticalAlignment="Top" Width="146" Click="ImportFromFile_Click"/>
+        <Label x:Name="NoDataBanner" Content="НЕТ ДАННЫХ" HorizontalAlignment="Left" Height="25" Margin="210,628,0,0" VerticalAlignment="Top" Width="146" Background="#FFE07B7B" Visibility="Hidden"/>
 
     </Grid>
 </Window>

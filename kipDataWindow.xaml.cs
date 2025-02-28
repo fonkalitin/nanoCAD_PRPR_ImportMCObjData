@@ -115,6 +115,7 @@ namespace PRPR_ImportMCObjData
         /// </summary>
         private void PopulateDataGrid()
         {
+            
             // Загружаем настройки из CSV
             var (objectName, mappings) = LoadSettingsFromCsv();
 
@@ -135,8 +136,11 @@ namespace PRPR_ImportMCObjData
             if (data == null || data.Count == 0)
             {
                 //MessageBox.Show("Нет данных для отображения");
+
+                NoDataBanner.Visibility = Visibility.Visible;
                 return;
             }
+                        
 
             // Наполняем коллекцию Parameters
             foreach (var attributeValues in data)
@@ -158,6 +162,7 @@ namespace PRPR_ImportMCObjData
 
             // Создаем динамические столбцы
             CreateDynamicColumns(mappings);
+            NoDataBanner.Visibility = Visibility.Collapsed;
         }
 
 
@@ -355,7 +360,7 @@ namespace PRPR_ImportMCObjData
 
         }
 
-       
+
 
         private void CheckAll_Click(object sender, RoutedEventArgs e) // Отметить все позиции
         {
@@ -374,7 +379,7 @@ namespace PRPR_ImportMCObjData
 
         private void ExportToCsvBtn_Click(object sender, RoutedEventArgs e)
         {
-            string CSVexportDataFileName = GetActiveDocumentPathInfo(PathInfoType.FileNameWithoutExt)+"_ExportData.csv";
+            string CSVexportDataFileName = GetActiveDocumentPathInfo(PathInfoType.FileNameWithoutExt) + "_ExportData.csv";
             ExportToCSV.ExportToCsv(dataGrid, ExportHeaders.IsChecked.Value, Path.Combine(ActiveDocPath, CSVexportDataFileName));
             //ExportDataGridToFile.ExportToCsv(dataGrid, ExportHeaders.IsChecked.Value, "C:\\tmp\\KIPdata.csv");
         }
@@ -449,7 +454,7 @@ namespace PRPR_ImportMCObjData
                 MessageBox.Show($"Ошибка при выборе файла: {ex.Message}", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
             }
 
-            
+
         }
     }
 }
