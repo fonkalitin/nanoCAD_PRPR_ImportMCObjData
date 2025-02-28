@@ -57,7 +57,7 @@ namespace PRPR_ImportMCObjData
         /// </summary>
         private (string ObjectName, List<AttributeMapping> Mappings) LoadSettingsFromCsv()
         {
-            string csvPath = Path.Combine(dllFolder, "AttributeMappings.csv"); // Путь к CSV файлу
+            string csvPath = AttributeMappingsFilePath; // Путь к CSV файлу
             var mappings = new List<AttributeMapping>();
             string objectName = string.Empty;
 
